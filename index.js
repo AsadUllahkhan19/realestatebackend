@@ -20,6 +20,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.get("/", (req, res) => {
   res.send("Fine");
 });
+
 // app.use(
 //   "/static",
 //   express.static(path.join(__dirname, "public", "data", "uploads"))
