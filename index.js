@@ -28,7 +28,7 @@ app.use(
 
 main();
 
-// app.use("/", require("./routes/index"));
+app.use("/", require("./routes/index"));
 
 // Testing API
 
