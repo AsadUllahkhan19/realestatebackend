@@ -21,10 +21,10 @@ app.get("/", (req, res) => {
   res.send("Fine");
 });
 
-// app.use(
-//   "/static",
-//   express.static(path.join(__dirname, "files", "data", "uploads"))
-// );
+app.use(
+  "/static",
+  express.static(path.join(__dirname, "files", "data", "uploads"))
+);
 
 main();
 
