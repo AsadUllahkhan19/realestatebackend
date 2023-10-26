@@ -32,7 +32,7 @@ app.use("/", require("./routes/index"));
 
 // Testing API
 
-app.listen(4000, () => console.log("Server running 4000"));
+app.listen(process.env.PORT, () => console.log("Server running 4000"));
 
 // jwt.encode(secret, 'asad@gmail.com', function (err, token) {
 //     if (err) {
