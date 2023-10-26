@@ -21,14 +21,14 @@ app.get("/", (req, res) => {
   res.send("Fine");
 });
 
-app.use(
-  "/static",
-  express.static(path.join(__dirname, "files", "data", "uploads"))
-);
+// app.use(
+//   "/static",
+//   express.static(path.join(__dirname, "files", "data", "uploads"))
+// );
 
 main();
 
-app.use("/", require("./routes/index"));
+// app.use("/", require("./routes/index"));
 
 // Testing API
 
