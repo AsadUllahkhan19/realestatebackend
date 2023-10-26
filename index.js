@@ -1,15 +1,15 @@
 const express = require("express");
 const app = express();
 const cors = require("cors");
-const mongoose = require("mongoose");
+// const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const path = require("path");
 require("dotenv").config();
-const multer = require("multer");
+// const multer = require("multer");
 
 const main = require("./config/db");
-const UserMiddleWare = require("./middlewares/UserVerify");
-const helpers = require("./helpers/validation");
+// const UserMiddleWare = require("./middlewares/UserVerify");
+// const helpers = require("./helpers/validation");
 
 // Your Twilio Account SID and Auth Token
 
@@ -20,10 +20,10 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.get("/", (req, res) => {
   res.send("Fine");
 });
-app.use(
-  "/static",
-  express.static(path.join(__dirname, "public", "data", "uploads"))
-);
+// app.use(
+//   "/static",
+//   express.static(path.join(__dirname, "public", "data", "uploads"))
+// );
 
 main();
 
