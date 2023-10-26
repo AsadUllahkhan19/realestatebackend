@@ -6,11 +6,11 @@ const path = require('path')
 
 const Users = require("../models/Users");
 const Property = require("../models/Property");
-const imageUpload = require("../middlewares/Multer");
+// const imageUpload = require("../middlewares/Multer");
 const verifyToken = require("../middlewares/UserVerify");
 const SubCategory = require('../models/SubCategory')
-
-router.post("/upload", imageUpload.array("photos", 12), async (req, res) => {
+//  imageUpload.array("photos", 12)
+router.post("/upload", async (req, res) => {
   try {
     if (req?.files.length < 1) {
       return res.status(400).send({ message: "image required" });
