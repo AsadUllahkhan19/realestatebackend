@@ -162,7 +162,8 @@ router.post("/login", async (req, res) => {
     }
     // 1. Authenticate email & password.
     const userData = await User.findOne({ email: email });
-    if (userData.otpVerified == false) {
+    console.log(userData)
+    if (userData?.otpVerified == false) {
       return res.status(400).send({ message: "Otp not verified." });
     }
     if (email != userData?.email) {
