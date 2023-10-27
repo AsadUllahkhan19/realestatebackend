@@ -14,6 +14,7 @@ const main = require("./config/db");
 // Your Twilio Account SID and Auth Token
 
 app.use(cors("*"));
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
