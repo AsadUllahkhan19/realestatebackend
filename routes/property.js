@@ -6,12 +6,12 @@ const path = require('path')
 
 const Users = require("../models/Users");
 const Property = require("../models/Property");
-const imageUpload = require("../middlewares/Multer");
+// const imageUpload = require("../middlewares/Multer");
 const verifyToken = require("../middlewares/UserVerify");
 const SubCategory = require('../models/SubCategory')
 
-router.post("/upload", 
-imageUpload.array("photos", 12)
+router.post("/upload"
+// ,  imageUpload.array("photos", 12)
 ,async (req, res) => {
   try {
     if (req?.files.length < 1) {
@@ -239,7 +239,7 @@ router.put("/upload", async (req, res) => {
 
 router.put(
   "/upload-media",
-  imageUpload.array("photos", 2),
+  // imageUpload.array("photos", 2),
   async (req, res) => {
     try {
       let videos = [];
@@ -509,7 +509,9 @@ router.get("/property-list", async (req, res) => {
   }
 });
 
-router.post('/add-photos', imageUpload.array("photos", 12), async (req, res) => {
+router.post('/add-photos', 
+// imageUpload.array("photos", 12), 
+async (req, res) => {
   try {
     console.log(req?.files)
     if (req?.files?.length < 1) {
@@ -526,27 +528,27 @@ router.post('/add-photos', imageUpload.array("photos", 12), async (req, res) => 
   }
 })
 
-// router.get('/delete-photo/:id', (req, res) => {
-//   try {
-//     fs.unlink(`./public/data/uploads/${req.params.id}`, (err => {
-//       if (err) {
-//         console.log('from_callback', err);
-//         return res.status(400).json({ message: err.name });
-//       }
-//       else {
-//         console.log("\nDeleted file: " + req.params.id);
-//         return res.status(200).json({ message: 'success' })
+router.get('/delete-photo/:id', (req, res) => {
+  try {
+    fs.unlink(`./public/data/uploads/${req.params.id}`, (err => {
+      if (err) {
+        console.log('from_callback', err);
+        return res.status(400).json({ message: err.name });
+      }
+      else {
+        console.log("\nDeleted file: " + req.params.id);
+        return res.status(200).json({ message: 'success' })
 
-//         // Get the files in current directory 
-//         // after deletion 
-//         // getFilesInDirectory();
-//       }
-//     }));
+        // Get the files in current directory 
+        // after deletion 
+        // getFilesInDirectory();
+      }
+    }));
 
-//   } catch (err) {
-//     console.log(err)
-//   }
-// })
+  } catch (err) {
+    console.log(err)
+  }
+})
 
 router.post('/update-property', async (req, res) => {
   try {
