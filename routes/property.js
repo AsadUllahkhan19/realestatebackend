@@ -526,27 +526,27 @@ router.post('/add-photos', imageUpload.array("photos", 12), async (req, res) => 
   }
 })
 
-router.get('/delete-photo/:id', (req, res) => {
-  try {
-    fs.unlink(`./public/data/uploads/${req.params.id}`, (err => {
-      if (err) {
-        console.log('from_callback', err);
-        return res.status(400).json({ message: err.name });
-      }
-      else {
-        console.log("\nDeleted file: " + req.params.id);
-        return res.status(200).json({ message: 'success' })
+// router.get('/delete-photo/:id', (req, res) => {
+//   try {
+//     fs.unlink(`./public/data/uploads/${req.params.id}`, (err => {
+//       if (err) {
+//         console.log('from_callback', err);
+//         return res.status(400).json({ message: err.name });
+//       }
+//       else {
+//         console.log("\nDeleted file: " + req.params.id);
+//         return res.status(200).json({ message: 'success' })
 
-        // Get the files in current directory 
-        // after deletion 
-        // getFilesInDirectory();
-      }
-    }));
+//         // Get the files in current directory 
+//         // after deletion 
+//         // getFilesInDirectory();
+//       }
+//     }));
 
-  } catch (err) {
-    console.log(err)
-  }
-})
+//   } catch (err) {
+//     console.log(err)
+//   }
+// })
 
 router.post('/update-property', async (req, res) => {
   try {
