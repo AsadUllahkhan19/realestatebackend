@@ -10,20 +10,19 @@ const Property = require("../models/Property");
 const verifyToken = require("../middlewares/UserVerify");
 const SubCategory = require('../models/SubCategory')
 
-router.post("/upload"
-// ,  imageUpload.array("photos", 12)
-,async (req, res) => {
+router.post("/upload",async (req, res) => {
   try {
-    if (req?.files.length < 1) {
-      return res.status(400).send({ message: "image required" });
-    }
-    const fd = req?.files?.map((item) => {
-      if (item.filename != "") {
-        return item.filename;
-      }
-    });
-    req.body = JSON.parse(req.body.bodyOfData);
-    req.body.upload.images = fd;
+    console.log(req.body.bodyOfData);
+    // if (req?.files.length < 1) {
+    //   return res.status(400).send({ message: "image required" });
+    // }
+    // const fd = req?.files?.map((item) => {
+    //   if (item.filename != "") {
+    //     return item.filename;
+    //   }
+    // });
+    // req.body = JSON.parse(req.body.bodyOfData);
+    // req.body.upload.images = req.body.photos;
     const {
       typesAndPurpose,
       locationAndAddress,
@@ -33,7 +32,7 @@ router.post("/upload"
       upload,
     } = req.body;
     // let videos = [];
-    console.log(req?.body?.upload?.videos);
+    console.log(req?.body);
     // const fd = req?.files?.map((item) => {
     //     if (item.filename != '') {
     //         return item.filename;
@@ -96,9 +95,10 @@ router.post("/upload"
 
       //Yup Schema End
       const finalObject = req.body;
+      console.log(finalObject)
       // finalObject.upload.images = fd;
       // finalObject.upload.videos = videos;
-      const saveProperty = new Property(req.body);
+      const saveProperty = new Property(finalObject);
       const createdData = await saveProperty.save();
       return res.send({ mesage: "succes", data: createdData });
     } catch (error) {
