@@ -94,7 +94,7 @@ router.post("/register", async (req, res) => {
     saveData.save();
 
     // ========================= NodeMailer ===================
-  
+
 
     const apiKey = "77316142-6183407a";
     const domain = "sandbox799a3f485fd44f9081df7fa2756c2159.mailgun.org";
@@ -148,16 +148,16 @@ router.post("/register", async (req, res) => {
     //emailOptions - who sends what to whom
     const sendEmail = async (emailOptions) => {
       let emailTransporter = await createTransporter();
-      await emailTransporter.sendMail(emailOptions);
+      await emailTransporter.sendMail({
+        subject: "MacWorld OTP Verification",
+        text: `Your verification Otp is ${OtpNumber}`,
+        to: req?.body?.email,
+        from: 'macworldtechnology@gmail.com'
+      });
     };
     // ========================================================
 
-    sendEmail({
-      subject: "MacWorld OTP Verification",
-      text: `Your verification Otp is ${OtpNumber}`,
-      to: req?.body?.email,
-      from: 'macworldtechnology@gmail.com'
-    });
+
     return res.send({ message: "Success", data: saveData._id });
   } catch (error) {
     console.log("ERORR", error);
