@@ -15,49 +15,9 @@ const OAuth2 = google.auth.OAuth2;
 
 
 const createTransporter = async () => {
-  const apiKey = "77316142-6183407a";
-  const domain = "sandbox799a3f485fd44f9081df7fa2756c2159.mailgun.org";
 
-  const ClientId =
-    "832524542097-m7kqvp5121159vsl3clpq6trbt4uk6gf.apps.googleusercontent.com";
-  const ClientSecret = "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";
 
-  const oauth2Client = new OAuth2(
-    ClientId,
-    ClientSecret,
-    "https://developers.google.com/oauthplayground"
-  );
 
-  oauth2Client.setCredentials({
-    refresh_token:
-      "1//04tNKOIERQqAECgYIARAAGAQSNwF-L9Ir5Tr66fdik3S_af1088-5xIzBrnbL-QVCfgNz6EoazeZUqENCctlcm6WvaM7A81NHH1U",
-  });
-
-  const accessToken = await new Promise((resolve, reject) => {
-    oauth2Client.getAccessToken((err, token) => {
-      if (err) {
-        console.log("yyyyyyyyy", err);
-        reject();
-      }
-      console.log("yesss", err);
-      resolve(token);
-    });
-  });
-
-  const transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-      type: "OAuth2",
-      user: "khanbahadur55555@gmail.com",
-      accessToken,
-      clientId:
-        "832524542097-m7kqvp5121159vsl3clpq6trbt4uk6gf.apps.googleusercontent.com",
-      clientSecret:
-        "832524542097-m7kqvp5121159vsl3clpq6trbt4uk6gf.apps.googleusercontent.com",
-      refreshToken:
-        "1//04tNKOIERQqAECgYIARAAGAQSNwF-L9Ir5Tr66fdik3S_af1088-5xIzBrnbL-QVCfgNz6EoazeZUqENCctlcm6WvaM7A81NHH1U",
-    },
-  });
 
   return transporter;
 };
@@ -143,19 +103,98 @@ router.post("/register", async (req, res) => {
     saveData.save();
 
     // ========================= NodeMailer ===================
+    const apiKey = "77316142-6183407a";
+    const domain = "sandbox799a3f485fd44f9081df7fa2756c2159.mailgun.org";
+
+    const ClientId =
+      "832524542097-m7kqvp5121159vsl3clpq6trbt4uk6gf.apps.googleusercontent.com";
+    const ClientSecret = "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";
+
+    const oauth2Client = new OAuth2(
+      ClientId,
+      ClientSecret,
+      "https://developers.google.com/oauthplayground"
+    );
+
+    oauth2Client.setCredentials({
+      refresh_token:
+        "1//04tNKOIERQqAECgYIARAAGAQSNwF-L9Ir5Tr66fdik3S_af1088-5xIzBrnbL-QVCfgNz6EoazeZUqENCctlcm6WvaM7A81NHH1U",
+    });
+
+    const accessToken = await new Promise((resolve, reject) => {
+      oauth2Client.getAccessToken((err, token) => {
+        if (err) {
+          console.log("yyyyyyyyy", err);
+          reject();
+        }
+        console.log("yesss", err);
+        resolve(token);
+      });
+    });
+
+    const mailData = {
+      subject: "MacWorld OTP Verification",
+      text: `Your verification Otp is ${OtpNumber}`,
+      to: req?.body?.email,
+      from: 'macworldtechnology@gmail.com'
+    }
+
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        type: "OAuth2",
+        user: "khanbahadur55555@gmail.com",
+        accessToken,
+        clientId:
+          "832524542097-m7kqvp5121159vsl3clpq6trbt4uk6gf.apps.googleusercontent.com",
+        clientSecret:
+          "832524542097-m7kqvp5121159vsl3clpq6trbt4uk6gf.apps.googleusercontent.com",
+        refreshToken:
+          "1//04tNKOIERQqAECgYIARAAGAQSNwF-L9Ir5Tr66fdik3S_af1088-5xIzBrnbL-QVCfgNz6EoazeZUqENCctlcm6WvaM7A81NHH1U",
+      },
+    });
+
+    const server = await new Promise((resolve, reject) => {
+      // verify connection configuration
+      transporter.verify(function (error, success) {
+        if (success) {
+          resolve(success)
+        }
+        reject(error)
+      })
+    })
+    if (!server) {
+      res.status(500).json({ error: 'Error failed' })
+    }
+
+    const success = await new Promise((resolve, reject) => {
+      // send mail
+      transporter.sendMail(mailData).then((info, err) => {
+        if (info.response.includes('250')) {
+          resolve(true)
+        }
+        reject(err)
+      })
+    })
+
+    if (!success) {
+      res.status(500).json({ error: 'Error sending email' })
+    }
+
+    // ===========================================================
 
     // createTransporter()`
     //emailOptions - who sends what to whom
-    const sendEmail = async (emailOptions) => {
-      let emailTransporter = await createTransporter();
-      await emailTransporter.sendMail({
-        subject: "MacWorld OTP Verification",
-        text: `Your verification Otp is ${OtpNumber}`,
-        to: req?.body?.email,
-        from: 'macworldtechnology@gmail.com'
-      });
-    };
-    sendEmail()
+    // const sendEmail = async (emailOptions) => {
+    //   let emailTransporter = await createTransporter();
+    //   await emailTransporter.sendMail({
+    //     subject: "MacWorld OTP Verification",
+    //     text: `Your verification Otp is ${OtpNumber}`,
+    //     to: req?.body?.email,
+    //     from: 'macworldtechnology@gmail.com'
+    //   });
+    // };
+    // sendEmail()
     // ========================================================
 
 
