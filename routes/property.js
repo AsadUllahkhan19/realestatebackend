@@ -218,6 +218,114 @@ router.get("/get-property", async (req, res) => {
   }
 });
 
+// router.get("/get-property", async (req, res) => {
+//   try {
+//     const transform = () => {
+//       let result = [];
+//       if (req?.query?.category == "all") {
+//         let data = {};
+//         data["typesAndPurpose.category"] = {
+//           $in: ["residential", "commercial"],
+//         };
+//         result.push(data);
+//         // return result;
+//       }
+//       if (req?.query?.area != undefined) {
+//         let data = {};
+//         const minArea = req?.query?.area?.split('|')[0]
+//         const maxArea = req?.query?.area?.split('|')[1]
+
+//         if (minArea != '' && maxArea != '') {
+//           data["propertyDetails.areaSquare"] = { $lte: maxArea, $gte: minArea };
+//         } else if (minArea != '') {
+//           data["propertyDetails.areaSquare"] = { $gte: minArea };
+//         } else if (maxArea != '') {
+//           data["propertyDetails.areaSquare"] = { $lte: maxArea };
+//         }
+//         result.push(data);
+//       }
+//       if (req?.query?.bedRooms != undefined) {
+//         let data2 = {};;
+//         data2["amenities"] = {
+//           $elemMatch: {
+//             name: "bedRooms",
+//             value: req?.query?.bedRooms,
+//           },
+//         };
+//         result.push(data2);
+//       }
+//       if (req?.query?.purpose != undefined) {
+//         let data = {};
+//         data["typesAndPurpose.purpose"] = { $eq: req?.query?.purpose };
+//         result.push(data);
+//       }
+//       if (req?.query?.price != undefined) {
+//         let data = {};
+//         const minPrice = req?.query?.price?.split('|')[0]
+//         const maxPrice = req?.query?.price?.split('|')[1]
+//         if (minPrice != '' && maxPrice != '') {
+//           data["propertyDetails.InclusivePrice"] = { $lte: maxPrice, $gte: minPrice };
+//         } else if (minPrice != '') {
+//           data["propertyDetails.InclusivePrice"] = { $gte: minPrice };
+//         } else if (maxPrice != '') {
+//           data["propertyDetails.InclusivePrice"] = { $lte: maxPrice };
+//         }
+//         result.push(data);
+//       }
+//       if (req?.query?.subCategory != undefined) {
+//         let data = {};
+//         data["typesAndPurpose.subCategory"] = req?.query?.subCategory;
+//         result.push(data);
+//       }
+//       if (req?.query?.category != undefined && req?.query?.category != "all") {
+//         let data = {};
+//         data["typesAndPurpose.category"] = req?.query?.category;
+//         result.push(data);
+//       }
+//       if (req?.query?.bathRooms != undefined) {
+//         let data = {};
+//         data["amenities"] = {
+//           $elemMatch: {
+//             name: "bathRooms",
+//             value: req?.query?.bathRooms,
+//           },
+//         };
+//         result.push(data);
+//       }
+//       // ================================================================
+//       // if (req?.body?.subCategory != '') {
+//       //     let data = {};
+//       //     data.subCategory = req?.body?.subCategory;
+//       //     result.push(data);
+//       // }
+//       // if (req?.body?.purpose !== '') {
+//       //     let data = {};
+//       //     data.purpose = { '$eq': req?.body?.purpose };
+//       //     result.push(data);
+//       // }
+//       // if (req?.body?.InclusivePriceStart !== '') {
+//       //     let data = {};
+//       //     data.InclusivePrice = { '$gte': req?.body?.InclusivePriceStart, '$lte': req?.body?.InclusivePriceEnd };
+//       //     result.push(data);
+//       // }
+//       return result;
+//     };
+//     let savedUp = [];
+//     // if (transform().length < 1) {
+//     //   savedUp = await Property.find();
+//     // } else {
+//     savedUp = await Property.find({ $and: transform() }).select("_id propertyDetails.title propertyDetails.areaSquare propertyDetails.ownerShipStatus typesAndPurpose.category propertyDetails.inclusivePrice amenities contactDetails.email upload.images locationAndAddress propertyDetails.InclusivePrice");
+//     // }
+//     // console.log("heh", savedUp);
+//     console.log("query", transform());
+//     // .select('typesAndPurpose.purpose locationAndAddress.location propertyDetails.title propertyDetails.areaSquare propertyDetails.bedRooms propertyDetails.bathRooms propertyDetails.InclusivePrice locationAndAddress.address');
+//     return res.send({ message: "success", data: savedUp });
+//   } catch (error) {
+//     console.log(error);
+//     res.status(400).send({ message: error.name });
+//   }
+// });
+
 router.put("/upload", async (req, res) => {
   try {
     if (req?.body?.arrays && req?.body?.arrays?.length > 0) {
