@@ -39,7 +39,6 @@ router.get("/sub-category/:id", async (req, res) => {
 
 router.get("/all-subCategory", async (req, res) => {
   try {
-    
       const data1 = await SubCategory.find({});
       return res.send({ message: "success", data: data1 });
   } catch (err) {
