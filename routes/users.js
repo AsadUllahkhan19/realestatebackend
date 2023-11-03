@@ -42,17 +42,17 @@ router.post("/register", async (req, res) => {
       phoneNumber: yup.string().min(6, "Invalid phone number").required(),
       accountType: yup.string().required(),
     });
-    try {
-      await schema.validate({
-        name: req?.body?.name,
-        email: req?.body?.email,
-        password: req?.body?.password,
-        phoneNumber: req?.body?.phoneNumber,
-        accountType: req?.body?.accountType,
-      });
-    } catch (error) {
-      return res.status(400).json({ message: error["errors"][0] });
-    }
+    // try {
+      // await schema.validate({
+      //   name: req?.body?.name,
+      //   email: req?.body?.email,
+      //   password: req?.body?.password,
+      //   phoneNumber: req?.body?.phoneNumber,
+      //   accountType: req?.body?.accountType,
+      // });
+    // } catch (error) {
+    //   return res.status(400).json({ message: error["errors"][0] });
+    // }
     // if (name == '' || name === null || name === undefined) {
     //     return res.send({ message: 'Name is required.' })
     // }
