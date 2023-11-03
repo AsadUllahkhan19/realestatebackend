@@ -10,7 +10,7 @@ const Property = require("../models/Property");
 const verifyToken = require("../middlewares/UserVerify");
 const SubCategory = require('../models/SubCategory')
 
-router.post("/upload",async (req, res) => {
+router.post("/upload", async (req, res) => {
   try {
     console.log(req.body.bodyOfData);
     // if (req?.files.length < 1) {
@@ -617,24 +617,24 @@ router.get("/property-list", async (req, res) => {
   }
 });
 
-router.post('/add-photos', 
-// imageUpload.array("photos", 12), 
-async (req, res) => {
-  try {
-    console.log(req?.files)
-    if (req?.files?.length < 1) {
-      return res.status(400).send({ message: "image required" });
-    }
-    const fd = req?.files?.map((item) => {
-      if (item.filename != "") {
-        return item.filename;
+router.post('/add-photos',
+  // imageUpload.array("photos", 12), 
+  async (req, res) => {
+    try {
+      console.log(req?.files)
+      if (req?.files?.length < 1) {
+        return res.status(400).send({ message: "image required" });
       }
-    });
-    res.status(200).json({ message: 'success', data: fd })
-  } catch (error) {
-    console.log(error);
-  }
-})
+      const fd = req?.files?.map((item) => {
+        if (item.filename != "") {
+          return item.filename;
+        }
+      });
+      res.status(200).json({ message: 'success', data: fd })
+    } catch (error) {
+      console.log(error);
+    }
+  })
 
 router.get('/delete-photo/:id', (req, res) => {
   try {
@@ -674,6 +674,17 @@ router.post('/update-property', async (req, res) => {
   } catch (error) {
     console.log(error)
     return res.status(400).send({ message: error.name });
+  }
+})
+
+router.get('/delete-property/:id', async (req, res) => {
+  try {
+    const result = await findByIdAndDelete(req.params.id);
+    return res.status(200).json({ message: 'Property deleted successfully', data: result })
+
+  } catch (error) {
+    console.log(error);
+    return res.status(400).json({ message: error.name })
   }
 })
 
