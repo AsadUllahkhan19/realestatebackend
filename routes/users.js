@@ -72,7 +72,7 @@ router.post("/register", async (req, res) => {
     const checkEmail = await User.findOne({ email: email });
 
     if (checkEmail !== null) {
-      return res.status(400).send({ message: "Email already exists." });
+      return res.status(400).json({ message: "Email already exists." });
     }
 
     // 2. Hash password & Save to mongoose
