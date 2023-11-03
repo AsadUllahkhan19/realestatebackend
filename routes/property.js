@@ -679,7 +679,7 @@ router.post('/update-property', async (req, res) => {
 
 router.get('/delete-property/:id', async (req, res) => {
   try {
-    const result = await findByIdAndDelete(req.params.id);
+    const result = await Property.findByIdAndDelete(req.params.id);
     return res.status(200).json({ message: 'Property deleted successfully', data: result })
 
   } catch (error) {
