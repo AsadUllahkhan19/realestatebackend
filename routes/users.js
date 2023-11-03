@@ -51,7 +51,7 @@ router.post("/register", async (req, res) => {
         accountType: req?.body?.accountType,
       });
     } catch (error) {
-      return res.json({ message: error["errors"][0] });
+      return res.status(400).json({ message: error["errors"][0] });
     }
     // if (name == '' || name === null || name === undefined) {
     //     return res.send({ message: 'Name is required.' })
@@ -72,7 +72,7 @@ router.post("/register", async (req, res) => {
     const checkEmail = await User.findOne({ email: email });
 
     if (checkEmail !== null) {
-      return res.send({ message: "Email already exists." });
+      return res.status(400).send({ message: "Email already exists." });
     }
 
     // 2. Hash password & Save to mongoose
@@ -193,7 +193,7 @@ router.post("/register", async (req, res) => {
     // ========================================================
 
 
-    return res.send({ message: "Success", data: saveData._id });
+    return res.status(200).send({ message: "Success", data: saveData._id });
   } catch (error) {
     console.log("ERORR", error);
   }
