@@ -3,12 +3,13 @@ const router = express.Router();
 const yup = require("yup");
 const fs = require('fs');
 const path = require('path')
+const mongoose = require('mongoose')
 
 const Users = require("../models/Users");
 const Property = require("../models/Property");
 // const imageUpload = require("../middlewares/Multer");
 const verifyToken = require("../middlewares/UserVerify");
-const SubCategory = require('../models/SubCategory')
+const Traffic = require('../models/Traffic')
 
 router.post("/upload", async (req, res) => {
   try {
@@ -579,6 +580,28 @@ router.get("/add-impression/:id", async (req, res) => {
       { $inc: { impressions: 1 } }
     );
     return res.status(200).json({ message: "Success" });
+  } catch (error) {
+    console.log(error);
+    return res.status(400).send({ message: "problem here" });
+  }
+});
+
+router.get("/add-lead", async (req, res) => {
+  try {
+    if (req?.query?.userId !== undefined) {
+      const check = await Traffic.find({ propertyId: req?.query?.propertyId, userId: req?.query?.userId });
+      console.log(check)
+      if (check.length > 0) {
+        return res.status(200).json({ message: 'success' })
+      }
+      const data = new Traffic({ propertyId: req?.query?.propertyId, userId: req?.query?.userId });
+      const result = data.save()
+      return res.status(200).json({ message: 'success', data: result })
+    } else {
+      const data = new Traffic({ propertyId: req?.query?.propertyId });
+      const result = data.save()
+      return res.status(200).json({ message: 'success', data: result });
+    }
   } catch (error) {
     console.log(error);
     return res.status(400).send({ message: "problem here" });
