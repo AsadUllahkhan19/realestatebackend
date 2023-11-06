@@ -685,8 +685,18 @@ router.post('/update-property', async (req, res) => {
   try {
     console.log('checking_body', req.body);
     const updatedResult = await Property.findByIdAndUpdate(
-      { _id: req.body._id },
-      req.body,
+      req.body._id ,
+      {
+        typesAndPurpose: req.body.typesAndPurpose,
+        locationAndAddress: req.body.locationAndAddress,
+        propertyDetails: req.body.propertyDetails,
+        rentalDetails: req.body.rentalDetails,
+        contactDetails: req.body.contactDetails,
+        amenities: req.body.amenities,
+        upload: req.body.upload,
+        impressions: req.body.impressions,
+        clicks: req.body.clicks
+      },
       {
         new: true
       }
