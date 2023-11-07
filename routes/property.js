@@ -683,23 +683,22 @@ router.get('/delete-photo/:id', (req, res) => {
 
 router.post('/update-property', async (req, res) => {
   try {
-    console.log('checking_body', req.body);
+    console.log(req.body._id, 'checking_body', req.body.upload, req.body._id);
     const updatedResult = await Property.findByIdAndUpdate(
-      req.body._id ,
-      {
-        typesAndPurpose: req.body.typesAndPurpose,
-        locationAndAddress: req.body.locationAndAddress,
-        propertyDetails: req.body.propertyDetails,
-        rentalDetails: req.body.rentalDetails,
-        contactDetails: req.body.contactDetails,
-        amenities: req.body.amenities,
-        upload: req.body.upload,
-        impressions: req.body.impressions,
-        clicks: req.body.clicks
-      },
-      {
-        new: true
-      }
+      req.body._id,
+
+      { $set: { 'upload': req.body.upload, 'propertyDetails': req.body.propertyDetails, 'amenities': req.body.amenities, 'locationAndAddress': req.body.locationAndAddress } },
+
+      // typesAndPurpose: ,
+      // locationAndAddress: req.body.locationAndAddress,
+      // propertyDetails: req.body.propertyDetails,
+      // rentalDetails: req.body.rentalDetails,
+      // contactDetails: req.body.contactDetails,
+      // amenities: req.body.amenities,
+      // upload: req.body.upload,
+      // impressions: req.body.impressions,
+      // clicks: req.body.clicks
+
     );
     console.log('datas', updatedResult);
     return res.status(200).send({ message: 'success', data: updatedResult });
