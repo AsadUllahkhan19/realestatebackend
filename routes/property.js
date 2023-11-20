@@ -623,17 +623,17 @@ router.get("/add-clicks-on-click", async (req, res) => {
     return res.status(400).send({ message: "problem here" });
   }
 });
-// router.get("/add-impressions-on-view", async (req, res) => {
-//   try {
-//     let yourDate = new Date()
-//     const newDate = yourDate.toISOString().split('T')[0]
-//     const data = new Clicks({ propertyId: req?.query?.propertyId, userId: req?.query?.userId, clicks: 1, date: newDate });
-//     const result = data.save()
-//     return res.status(200).json({ message: 'success', data: result });
-//   } catch (error) {
-//     return res.status(400).send({ message: "problem here" });
-//   }
-// });
+router.get("/add-impressions-on-view", async (req, res) => {
+  try {
+    let yourDate = new Date()
+    const newDate = yourDate.toISOString().split('T')[0]
+    const data = new Clicks({ propertyId: req?.query?.propertyId, userId: req?.query?.userId, clicks: 1, date: newDate });
+    const result = data.save()
+    return res.status(200).json({ message: 'success', data: result });
+  } catch (error) {
+    return res.status(400).send({ message: "problem here" });
+  }
+});
 
 router.get("/get-impressions-count/:email", async (req, res) => {
   try {
