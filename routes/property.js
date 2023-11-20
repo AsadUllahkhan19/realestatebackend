@@ -207,7 +207,7 @@ router.get("/get-property", async (req, res) => {
     // if (transform().length < 1) {
     //   savedUp = await Property.find();
     // } else {
-    savedUp = await Property.find({ $and: transform() }).select("_id propertyDetails.title propertyDetails.areaSquare propertyDetails.ownerShipStatus typesAndPurpose.category propertyDetails.inclusivePrice amenities contactDetails.email upload.images locationAndAddress propertyDetails.InclusivePrice");
+    savedUp = await Property.find({ $and: transform() }).select("_id propertyDetails.title propertyDetails.areaSquare propertyDetails.ownerShipStatus typesAndPurpose.category propertyDetails.inclusivePrice amenities contactDetails.email upload.images locationAndAddress propertyDetails.InclusivePrice ownerId");
     // }
     // console.log("heh", savedUp);
     console.log("query", transform());
