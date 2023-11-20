@@ -9,7 +9,7 @@ const Users = require("../models/Users");
 const Property = require("../models/Property");
 // const imageUpload = require("../middlewares/Multer");
 const verifyToken = require("../middlewares/UserVerify");
-const Traffic = require('../models/Traffic')
+const Clicks = require('../models/Clicks')
 
 router.post("/upload", async (req, res) => {
   try {
@@ -586,27 +586,54 @@ router.get("/add-impression/:id", async (req, res) => {
   }
 });
 
-router.get("/add-lead", async (req, res) => {
+// router.get("/add-lead", async (req, res) => {
+//   try {
+//     if (req?.query?.userId !== undefined) {
+//       const check = await Traffic.find({ propertyId: req?.query?.propertyId, userId: req?.query?.userId });
+//       console.log(check)
+//       if (check.length > 0) {
+//         const check = await Traffic.findOneAndUpdate({ propertyId: req?.query?.propertyId, userId: req?.query?.userId } , {
+//           $inc: {
+//             clicks: 1
+//           }
+//         });
+//         return res.status(200).json({ message: 'success' })
+//       }
+//       const data = new Traffic({ propertyId: req?.query?.propertyId, userId: req?.query?.userId });
+//       const result = data.save()
+//       return res.status(200).json({ message: 'success', data: result })
+//     } else {
+//       const data = new Traffic({ propertyId: req?.query?.propertyId, clicks: 1 });
+//       const result = data.save()
+//       return res.status(200).json({ message: 'success', data: result });
+//     }
+//   } catch (error) {
+//     console.log(error);
+//     return res.status(400).send({ message: "problem here" });
+//   }
+// });
+router.get("/add-clicks-on-click", async (req, res) => {
   try {
-    if (req?.query?.userId !== undefined) {
-      const check = await Traffic.find({ propertyId: req?.query?.propertyId, userId: req?.query?.userId });
-      console.log(check)
-      if (check.length > 0) {
-        return res.status(200).json({ message: 'success' })
-      }
-      const data = new Traffic({ propertyId: req?.query?.propertyId, userId: req?.query?.userId });
-      const result = data.save()
-      return res.status(200).json({ message: 'success', data: result })
-    } else {
-      const data = new Traffic({ propertyId: req?.query?.propertyId });
-      const result = data.save()
-      return res.status(200).json({ message: 'success', data: result });
-    }
+    let yourDate = new Date();
+    const newDate = yourDate.toISOString().split('T')[0];
+    const data = new Clicks({ propertyId: req?.query?.propertyId, userId: req?.query?.userId, clicks: 1, date: newDate });
+    const result = data.save();
+    return res.status(200).json({ message: 'success', data: result });
   } catch (error) {
-    console.log(error);
     return res.status(400).send({ message: "problem here" });
   }
 });
+// router.get("/add-impressions-on-view", async (req, res) => {
+//   try {
+//     let yourDate = new Date()
+//     const newDate = yourDate.toISOString().split('T')[0]
+//     const data = new Clicks({ propertyId: req?.query?.propertyId, userId: req?.query?.userId, clicks: 1, date: newDate });
+//     const result = data.save()
+//     return res.status(200).json({ message: 'success', data: result });
+//   } catch (error) {
+//     return res.status(400).send({ message: "problem here" });
+//   }
+// });
 
 router.get("/get-impressions-count/:email", async (req, res) => {
   try {
