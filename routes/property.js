@@ -10,6 +10,7 @@ const Property = require("../models/Property");
 // const imageUpload = require("../middlewares/Multer");
 const verifyToken = require("../middlewares/UserVerify");
 const Clicks = require('../models/Clicks')
+const Impressions = require('../models/Impressions');
 
 router.post("/upload", async (req, res) => {
   try {
@@ -586,49 +587,34 @@ router.get("/add-impression/:id", async (req, res) => {
   }
 });
 
-// router.get("/add-lead", async (req, res) => {
-//   try {
-//     if (req?.query?.userId !== undefined) {
-//       const check = await Traffic.find({ propertyId: req?.query?.propertyId, userId: req?.query?.userId });
-//       console.log(check)
-//       if (check.length > 0) {
-//         const check = await Traffic.findOneAndUpdate({ propertyId: req?.query?.propertyId, userId: req?.query?.userId } , {
-//           $inc: {
-//             clicks: 1
-//           }
-//         });
-//         return res.status(200).json({ message: 'success' })
-//       }
-//       const data = new Traffic({ propertyId: req?.query?.propertyId, userId: req?.query?.userId });
-//       const result = data.save()
-//       return res.status(200).json({ message: 'success', data: result })
-//     } else {
-//       const data = new Traffic({ propertyId: req?.query?.propertyId, clicks: 1 });
-//       const result = data.save()
-//       return res.status(200).json({ message: 'success', data: result });
-//     }
-//   } catch (error) {
-//     console.log(error);
-//     return res.status(400).send({ message: "problem here" });
-//   }
-// });
+router.get("/add-lead", async (req, res) => {
+  try {
+    if (req?.query?.userId !== undefined) {
+      console.log(req?.query?.propertyId, req?.query?.userId);
+      const result = await Property.findOneAndUpdate({ _id: req?.query?.propertyId, ownerId: req?.query?.userId }, {
+        $inc: {
+          leads: 1
+        }
+      });
+      return res.status(200).json({ message: 'success', data: result })
+    }
+    // else {
+    //   const data = new Property({ propertyId: req?.query?.propertyId, clicks: 1 });
+    //   const result = data.save()
+    //   return res.status(200).json({ message: 'success', data: result });
+    // }
+  } catch (error) {
+    console.log(error);
+    return res.status(400).send({ message: "problem here" });
+  }
+});
+
 router.get("/add-clicks-on-click", async (req, res) => {
   try {
     let yourDate = new Date();
     const newDate = yourDate.toISOString().split('T')[0];
     const data = new Clicks({ propertyId: req?.query?.propertyId, userId: req?.query?.userId, clicks: 1, date: newDate });
     const result = data.save();
-    return res.status(200).json({ message: 'success', data: result });
-  } catch (error) {
-    return res.status(400).send({ message: "problem here" });
-  }
-});
-router.get("/add-impressions-on-view", async (req, res) => {
-  try {
-    let yourDate = new Date()
-    const newDate = yourDate.toISOString().split('T')[0]
-    const data = new Clicks({ propertyId: req?.query?.propertyId, userId: req?.query?.userId, clicks: 1, date: newDate });
-    const result = data.save()
     return res.status(200).json({ message: 'success', data: result });
   } catch (error) {
     return res.status(400).send({ message: "problem here" });
@@ -644,6 +630,7 @@ router.get("/get-impressions-count/:email", async (req, res) => {
           _id: null,
           impressions: { $sum: "$impressions" },
           clicks: { $sum: "$clicks" },
+          leads: { $sum: "$leads" },
         },
       },
       { $unset: ["_id"] },
@@ -664,6 +651,37 @@ router.get("/property-list", async (req, res) => {
   } catch (error) {
     console.log(error);
     return res.status(500).send({ message: "error" });
+  }
+});
+
+router.get('/get-user-clicks/:id', async (req, res) => {
+  try {
+    const data = await Clicks.find({ userId: req.params.id })
+    return res.json({ message: 'success', data: data })
+  } catch (error) {
+    return res.json({ message: error.name })
+  }
+})
+
+router.get("/add-impressions-on-view", async (req, res) => {
+  try {
+    let yourDate = new Date()
+    const newDate = yourDate.toISOString().split('T')[0]
+    const data = new ImpressionSchema({ propertyId: req?.query?.propertyId, userId: req?.query?.userId, clicks: 1, date: newDate });
+    const result = data.save()
+    return res.status(200).json({ message: 'success', data: result });
+  } catch (error) {
+    return res.status(400).send({ message: "problem here" });
+  }
+});
+
+router.get("/get-impressions-on-view/:id", async (req, res) => {
+  try {
+    const data = await Impressions.find({ userId: req.params.id });
+    console.log(data)
+    return res.status(200).json({ message: 'success', data: data });
+  } catch (error) {
+    return res.status(400).send({ message: "problem here" });
   }
 });
 
@@ -746,5 +764,6 @@ router.get('/delete-property/:id', async (req, res) => {
     return res.status(400).json({ message: error.name })
   }
 })
+
 
 module.exports = router;

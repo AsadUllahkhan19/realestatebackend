@@ -62,6 +62,7 @@ const PropertySchema = new mongoose.Schema({
     // Add Impressions
     impressions: { type: Number, default: 0 },
     clicks: { type: Number, default: 0 },
+    leads: { type: Number, default:0 },
     // tracking document
     createdAt: { type: Date, default: Date.now() },
     updatedAt: { type: Date, default: Date.now() },
