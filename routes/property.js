@@ -617,6 +617,7 @@ router.get("/add-clicks-on-click", async (req, res) => {
     const result = data.save();
     return res.status(200).json({ message: 'success', data: result });
   } catch (error) {
+    console.log('add_Clicks', error);
     return res.status(400).send({ message: "problem here" });
   }
 });
@@ -637,7 +638,6 @@ router.get("/get-impressions-count/:email", async (req, res) => {
     ]);
     return res.status(200).json({ message: "success", data: data });
   } catch (error) {
-    console.log(error);
     return res.status(400);
   }
 });
@@ -667,10 +667,11 @@ router.get("/add-impressions-on-view", async (req, res) => {
   try {
     let yourDate = new Date()
     const newDate = yourDate.toISOString().split('T')[0]
-    const data = new ImpressionSchema({ propertyId: req?.query?.propertyId, userId: req?.query?.userId, clicks: 1, date: newDate });
+    const data = new Impressions({ propertyId: req?.query?.propertyId, userId: req?.query?.userId, clicks: 1, date: newDate });
     const result = data.save()
     return res.status(200).json({ message: 'success', data: result });
   } catch (error) {
+    console.log('from_impressionadd', error)
     return res.status(400).send({ message: "problem here" });
   }
 });
@@ -678,7 +679,6 @@ router.get("/add-impressions-on-view", async (req, res) => {
 router.get("/get-impressions-on-view/:id", async (req, res) => {
   try {
     const data = await Impressions.find({ userId: req.params.id });
-    console.log(data)
     return res.status(200).json({ message: 'success', data: data });
   } catch (error) {
     return res.status(400).send({ message: "problem here" });
