@@ -88,8 +88,8 @@ router.get("/ownership-status", (req, res) => {
     return res.send({
       message: "Ok !!",
       data: [
-        { key: "freeHold", value: "free hold" },
-        { key: "leaseHold", value: "lease hold" },
+        { key: "freeHold", value: "Free Hold" },
+        { key: "leaseHold", value: "Lease Hold" },
       ],
     });
   } catch (error) {
