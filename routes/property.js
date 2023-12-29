@@ -114,6 +114,7 @@ router.post("/upload", async (req, res) => {
 
 router.get("/get-property", async (req, res) => {
   try {
+    let page = 1;
     const transform = () => {
       let result = [];
       if (req?.query?.category == "all") {
@@ -204,11 +205,19 @@ router.get("/get-property", async (req, res) => {
       // }
       return result;
     };
-    let savedUp = [];
+    if(req?.query?.page !== undefined) {
+      page = req?.query?.page;
+    }
+    const skip = (page - 1) * 12;
+    let savedUp = []; 
     // if (transform().length < 1) {
     //   savedUp = await Property.find();
     // } else {
-    savedUp = await Property.find({ $and: transform() }).select("_id propertyDetails.title propertyDetails.areaSquare propertyDetails.ownerShipStatus typesAndPurpose.category propertyDetails.inclusivePrice amenities contactDetails.email upload.images locationAndAddress propertyDetails.InclusivePrice ownerId");
+    savedUp = await Property
+    .find({ $and: transform() })
+    .select("_id propertyDetails.title propertyDetails.areaSquare propertyDetails.ownerShipStatus typesAndPurpose.category propertyDetails.inclusivePrice amenities contactDetails.email upload.images locationAndAddress propertyDetails.InclusivePrice ownerId")
+    .limit(12)
+    .skip(skip);
     // }
     // console.log("heh", savedUp);
     console.log("query", transform());
@@ -671,7 +680,7 @@ router.get("/add-impressions-on-view", async (req, res) => {
     const result = data.save()
     return res.status(200).json({ message: 'success', data: result });
   } catch (error) {
-    console.log('from_impressionadd', error)
+    console.log('from_impressionadd', error);
     return res.status(400).send({ message: "problem here" });
   }
 });

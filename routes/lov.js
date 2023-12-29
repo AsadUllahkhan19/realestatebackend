@@ -1,3 +1,25 @@
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Category:
+ *       type: object
+ *       required:
+ *         - Key
+ *         - value
+ *         - name
+ *       properties:
+ *         Key:
+ *           type: string
+ *           description: Name of item.
+ *         value:
+ *           type: string
+ *           description: Actual value of the item.
+ *         name:
+ *           type: string
+ *           description: Name to be displayed on the screen.
+ */
+
 const express = require("express");
 const router = express.Router();
 
@@ -39,8 +61,8 @@ router.get("/sub-category/:id", async (req, res) => {
 
 router.get("/all-subCategory", async (req, res) => {
   try {
-      const data1 = await SubCategory.find({});
-      return res.send({ message: "success", data: data1 });
+    const data1 = await SubCategory.find({});
+    return res.send({ message: "success", data: data1 });
   } catch (err) {
     return res.send({ message: err });
   }
