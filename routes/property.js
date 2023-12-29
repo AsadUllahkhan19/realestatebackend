@@ -1,16 +1,16 @@
 const express = require("express");
 const router = express.Router();
 const yup = require("yup");
-const fs = require('fs');
-const path = require('path')
-const mongoose = require('mongoose')
+const fs = require("fs");
+const path = require("path");
+const mongoose = require("mongoose");
 
 const Users = require("../models/Users");
 const Property = require("../models/Property");
 // const imageUpload = require("../middlewares/Multer");
 const verifyToken = require("../middlewares/UserVerify");
-const Clicks = require('../models/Clicks')
-const Impressions = require('../models/Impressions');
+const Clicks = require("../models/Clicks");
+const Impressions = require("../models/Impressions");
 
 router.post("/upload", async (req, res) => {
   try {
@@ -97,7 +97,7 @@ router.post("/upload", async (req, res) => {
 
       //Yup Schema End
       const finalObject = req.body;
-      console.log(finalObject)
+      console.log(finalObject);
       // finalObject.upload.images = fd;
       // finalObject.upload.videos = videos;
       const saveProperty = new Property(finalObject);
@@ -126,20 +126,20 @@ router.get("/get-property", async (req, res) => {
       }
       if (req?.query?.area != undefined) {
         let data = {};
-        const minArea = req?.query?.area?.split('|')[0]
-        const maxArea = req?.query?.area?.split('|')[1]
+        const minArea = req?.query?.area?.split("|")[0];
+        const maxArea = req?.query?.area?.split("|")[1];
 
-        if (minArea != '' && maxArea != '') {
+        if (minArea != "" && maxArea != "") {
           data["propertyDetails.areaSquare"] = { $lte: maxArea, $gte: minArea };
-        } else if (minArea != '') {
+        } else if (minArea != "") {
           data["propertyDetails.areaSquare"] = { $gte: minArea };
-        } else if (maxArea != '') {
+        } else if (maxArea != "") {
           data["propertyDetails.areaSquare"] = { $lte: maxArea };
         }
         result.push(data);
       }
       if (req?.query?.bedRooms != undefined) {
-        let data2 = {};;
+        let data2 = {};
         data2["amenities"] = {
           $elemMatch: {
             name: "bedRooms",
@@ -155,13 +155,16 @@ router.get("/get-property", async (req, res) => {
       }
       if (req?.query?.price != undefined) {
         let data = {};
-        const minPrice = req?.query?.price?.split('|')[0]
-        const maxPrice = req?.query?.price?.split('|')[1]
-        if (minPrice != '' && maxPrice != '') {
-          data["propertyDetails.InclusivePrice"] = { $lte: maxPrice, $gte: minPrice };
-        } else if (minPrice != '') {
+        const minPrice = req?.query?.price?.split("|")[0];
+        const maxPrice = req?.query?.price?.split("|")[1];
+        if (minPrice != "" && maxPrice != "") {
+          data["propertyDetails.InclusivePrice"] = {
+            $lte: maxPrice,
+            $gte: minPrice,
+          };
+        } else if (minPrice != "") {
           data["propertyDetails.InclusivePrice"] = { $gte: minPrice };
-        } else if (maxPrice != '') {
+        } else if (maxPrice != "") {
           data["propertyDetails.InclusivePrice"] = { $lte: maxPrice };
         }
         result.push(data);
@@ -208,7 +211,9 @@ router.get("/get-property", async (req, res) => {
     // if (transform().length < 1) {
     //   savedUp = await Property.find();
     // } else {
-    savedUp = await Property.find({ $and: transform() }).select("_id propertyDetails.title propertyDetails.areaSquare propertyDetails.ownerShipStatus typesAndPurpose.category propertyDetails.inclusivePrice amenities contactDetails.email upload.images locationAndAddress propertyDetails.InclusivePrice ownerId");
+    savedUp = await Property.find({ $and: transform() }).select(
+      "_id propertyDetails.title propertyDetails.areaSquare propertyDetails.ownerShipStatus typesAndPurpose.category propertyDetails.inclusivePrice amenities contactDetails.email upload.images locationAndAddress propertyDetails.InclusivePrice ownerId"
+    );
     // }
     // console.log("heh", savedUp);
     console.log("query", transform());
@@ -591,12 +596,15 @@ router.get("/add-lead", async (req, res) => {
   try {
     if (req?.query?.userId !== undefined) {
       console.log(req?.query?.propertyId, req?.query?.userId);
-      const result = await Property.findOneAndUpdate({ _id: req?.query?.propertyId, ownerId: req?.query?.userId }, {
-        $inc: {
-          leads: 1
+      const result = await Property.findOneAndUpdate(
+        { _id: req?.query?.propertyId, ownerId: req?.query?.userId },
+        {
+          $inc: {
+            leads: 1,
+          },
         }
-      });
-      return res.status(200).json({ message: 'success', data: result })
+      );
+      return res.status(200).json({ message: "success", data: result });
     }
     // else {
     //   const data = new Property({ propertyId: req?.query?.propertyId, clicks: 1 });
@@ -612,12 +620,17 @@ router.get("/add-lead", async (req, res) => {
 router.get("/add-clicks-on-click", async (req, res) => {
   try {
     let yourDate = new Date();
-    const newDate = yourDate.toISOString().split('T')[0];
-    const data = new Clicks({ propertyId: req?.query?.propertyId, userId: req?.query?.userId, clicks: 1, date: newDate });
+    const newDate = yourDate.toISOString().split("T")[0];
+    const data = new Clicks({
+      propertyId: req?.query?.propertyId,
+      userId: req?.query?.userId,
+      clicks: 1,
+      date: newDate,
+    });
     const result = data.save();
-    return res.status(200).json({ message: 'success', data: result });
+    return res.status(200).json({ message: "success", data: result });
   } catch (error) {
-    console.log('add_Clicks', error);
+    console.log("add_Clicks", error);
     return res.status(400).send({ message: "problem here" });
   }
 });
@@ -654,24 +667,40 @@ router.get("/property-list", async (req, res) => {
   }
 });
 
-router.get('/get-user-clicks/:id', async (req, res) => {
+router.get("/get-user-clicks/:id", async (req, res) => {
   try {
-    const data = await Clicks.find({ userId: req.params.id })
-    return res.json({ message: 'success', data: data })
+    const data = await Clicks.find({ userId: req.params.id });
+    return res.json({ message: "success", data: data });
   } catch (error) {
-    return res.json({ message: error.name })
+    return res.json({ message: error.name });
   }
-})
+});
+router.post("/serach-property-by-searchbar", async (req, res) => {
+  try {
+    console.log(req.body.value);
+    const data = await Property.find({
+      "propertyDetails.title": { $regex: req.body.value, $options: "i" },
+    });
+    return res.json({ message: "success", data: data });
+  } catch (error) {
+    return res.json({ message: error.name });
+  }
+});
 
 router.get("/add-impressions-on-view", async (req, res) => {
   try {
-    let yourDate = new Date()
-    const newDate = yourDate.toISOString().split('T')[0]
-    const data = new Impressions({ propertyId: req?.query?.propertyId, userId: req?.query?.userId, clicks: 1, date: newDate });
-    const result = data.save()
-    return res.status(200).json({ message: 'success', data: result });
+    let yourDate = new Date();
+    const newDate = yourDate.toISOString().split("T")[0];
+    const data = new Impressions({
+      propertyId: req?.query?.propertyId,
+      userId: req?.query?.userId,
+      clicks: 1,
+      date: newDate,
+    });
+    const result = data.save();
+    return res.status(200).json({ message: "success", data: result });
   } catch (error) {
-    console.log('from_impressionadd', error)
+    console.log("from_impressionadd", error);
     return res.status(400).send({ message: "problem here" });
   }
 });
@@ -679,17 +708,18 @@ router.get("/add-impressions-on-view", async (req, res) => {
 router.get("/get-impressions-on-view/:id", async (req, res) => {
   try {
     const data = await Impressions.find({ userId: req.params.id });
-    return res.status(200).json({ message: 'success', data: data });
+    return res.status(200).json({ message: "success", data: data });
   } catch (error) {
     return res.status(400).send({ message: "problem here" });
   }
 });
 
-router.post('/add-photos',
-  // imageUpload.array("photos", 12), 
+router.post(
+  "/add-photos",
+  // imageUpload.array("photos", 12),
   async (req, res) => {
     try {
-      console.log(req?.files)
+      console.log(req?.files);
       if (req?.files?.length < 1) {
         return res.status(400).send({ message: "image required" });
       }
@@ -698,41 +728,47 @@ router.post('/add-photos',
           return item.filename;
         }
       });
-      res.status(200).json({ message: 'success', data: fd })
+      res.status(200).json({ message: "success", data: fd });
     } catch (error) {
       console.log(error);
     }
-  })
+  }
+);
 
-router.get('/delete-photo/:id', (req, res) => {
+router.get("/delete-photo/:id", (req, res) => {
   try {
-    fs.unlink(`./public/data/uploads/${req.params.id}`, (err => {
+    fs.unlink(`./public/data/uploads/${req.params.id}`, (err) => {
       if (err) {
-        console.log('from_callback', err);
+        console.log("from_callback", err);
         return res.status(400).json({ message: err.name });
-      }
-      else {
+      } else {
         console.log("\nDeleted file: " + req.params.id);
-        return res.status(200).json({ message: 'success' })
+        return res.status(200).json({ message: "success" });
 
-        // Get the files in current directory 
-        // after deletion 
+        // Get the files in current directory
+        // after deletion
         // getFilesInDirectory();
       }
-    }));
-
+    });
   } catch (err) {
-    console.log(err)
+    console.log(err);
   }
-})
+});
 
-router.post('/update-property', async (req, res) => {
+router.post("/update-property", async (req, res) => {
   try {
-    console.log(req.body._id, 'checking_body', req.body.upload, req.body._id);
+    console.log(req.body._id, "checking_body", req.body.upload, req.body._id);
     const updatedResult = await Property.findByIdAndUpdate(
       req.body._id,
 
-      { $set: { 'upload': req.body.upload, 'propertyDetails': req.body.propertyDetails, 'amenities': req.body.amenities, 'locationAndAddress': req.body.locationAndAddress } },
+      {
+        $set: {
+          upload: req.body.upload,
+          propertyDetails: req.body.propertyDetails,
+          amenities: req.body.amenities,
+          locationAndAddress: req.body.locationAndAddress,
+        },
+      }
 
       // typesAndPurpose: ,
       // locationAndAddress: req.body.locationAndAddress,
@@ -743,27 +779,26 @@ router.post('/update-property', async (req, res) => {
       // upload: req.body.upload,
       // impressions: req.body.impressions,
       // clicks: req.body.clicks
-
     );
-    console.log('datas', updatedResult);
-    return res.status(200).send({ message: 'success', data: updatedResult });
-    // const data = await 
-  } catch (error) {
-    console.log(error)
-    return res.status(400).send({ message: error.name });
-  }
-})
-
-router.get('/delete-property/:id', async (req, res) => {
-  try {
-    const result = await Property.findByIdAndDelete(req.params.id);
-    return res.status(200).json({ message: 'Property deleted successfully', data: result })
-
+    console.log("datas", updatedResult);
+    return res.status(200).send({ message: "success", data: updatedResult });
+    // const data = await
   } catch (error) {
     console.log(error);
-    return res.status(400).json({ message: error.name })
+    return res.status(400).send({ message: error.name });
   }
-})
+});
 
+router.get("/delete-property/:id", async (req, res) => {
+  try {
+    const result = await Property.findByIdAndDelete(req.params.id);
+    return res
+      .status(200)
+      .json({ message: "Property deleted successfully", data: result });
+  } catch (error) {
+    console.log(error);
+    return res.status(400).json({ message: error.name });
+  }
+});
 
 module.exports = router;
