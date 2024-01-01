@@ -94,6 +94,7 @@ router.post("/register", async (req, res) => {
       phoneNumber: req?.body?.phoneNumber,
       accountType: req?.body?.accountType,
       otpCode: OtpNumber,
+      
     });
     saveData.save();
 
