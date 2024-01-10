@@ -199,6 +199,52 @@ router.post("/register", async (req, res) => {
   }
 });
 
+router.post('/update-password', async (req, res) => {
+  try {
+    const { newPassword, password, id } = req.body;
+    // 1. Get current password.
+    if (newPassword == "" || newPassword === null || newPassword === undefined) {
+      return res.status(400).send({ message: "New Password is required." });
+    }
+    if (password == "" || password === null || password === undefined) {
+      return res.status(400).send({ message: "Password is required." });
+    }
+    const userData = await User.findOne({ _id: id });
+    // 2. Match Password.
+    const dbPassword = await bcrypt.compare(password, userData?.password);
+    if (!dbPassword) {
+      return res.status(400).send({ message: "Invalid password" });
+    }
+    
+    // 2. Hash password & Save to mongoose
+    const hash = await bcrypt.hash(newPassword, 10);
+    // console.log("newwww", hash);
+    // 3. IF password same
+    const datas = await User.updateOne({ _id: id }, { $set: { password: hash } }, { new: true });
+    //       Update Password
+    //    ELSE  
+    return res.status(200).json({ message: 'success', data: datas });
+    //  RETURN Password Not Matched.
+  } catch (error) {
+    console.log('new Error', error);
+  }
+})
+
+router.post('/edit-profile', async (req, res) => {
+  try {
+    const { name, email, id } = req.body;
+    const userData = await User.findOne({ _id: id });
+    if(userData?.name) {
+      const datas = await User.updateOne({ _id: id }, { $set: { email: email, name: name } }, { new: true });
+      return res.status(200).json({ message: 'success', data: datas })
+    } else{
+      return res.status(400).json({ message: `User doesn't exist` });
+    }
+  } catch (error) {
+    console.log(error);
+  }
+})
+
 // Verify Token
 router.get("/verify-otp", async (req, res) => {
   try {
