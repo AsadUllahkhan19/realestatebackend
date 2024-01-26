@@ -11,45 +11,45 @@ const nodemailer = require("nodemailer");
 // require('dotenv').config();
 // const mailgun = require('mailgun-js');
 const { google } = require("googleapis");
+const { errorMonitor } = require("nodemailer/lib/mailer");
 const OAuth2 = google.auth.OAuth2;
 
 const createTransporter = async () => {
   return transporter;
 };
-
 // Register Method Route
 router.post("/register", async (req, res) => {
   try {
     const { name, email, password, phoneNumber, accountType } = req.body;
-    const schema = yup.object({
-      name: yup
-        .string()
-        .required()
-        .min(2, "Minimum length should be 2")
-        .max(12, "Maximum length should be 12"),
-      email: yup
-        .string()
-        .matches(
-          /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
-          "Invalid email format"
-        )
-        .required(),
-      password: yup
-        .string()
-        .min(5, "Minimum length should be 5")
-        .max(12, "Minimum length should be 12")
-        .required(),
-      phoneNumber: yup.string().min(6, "Invalid phone number").required(),
-      accountType: yup.string().required(),
-    });
+    // const schema = yup.object({
+    //   name: yup
+    //     .string()
+    //     .required()
+    //     .min(2, "Minimum length should be 2")
+    //     .max(12, "Maximum length should be 12"),
+    //   email: yup
+    //     .string()
+    //     .matches(
+    //       /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+    //       "Invalid email format"
+    //     )
+    //     .required(),
+    //   password: yup
+    //     .string()
+    //     .min(5, "Minimum length should be 5")
+    //     .max(12, "Minimum length should be 12")
+    //     .required(),
+    //   phoneNumber: yup.string().min(6, "Invalid phone number").required(),
+    //   accountType: yup.string().required(),
+    // });
     // try {
-      // await schema.validate({
-      //   name: req?.body?.name,
-      //   email: req?.body?.email,
-      //   password: req?.body?.password,
-      //   phoneNumber: req?.body?.phoneNumber,
-      //   accountType: req?.body?.accountType,
-      // });
+    // await schema.validate({
+    //   name: req?.body?.name,
+    //   email: req?.body?.email,
+    //   password: req?.body?.password,
+    //   phoneNumber: req?.body?.phoneNumber,
+    //   accountType: req?.body?.accountType,
+    // });
     // } catch (error) {
     //   return res.status(400).json({ message: error["errors"][0] });
     // }
@@ -88,14 +88,15 @@ router.post("/register", async (req, res) => {
 
     // 1. Add data to collection
     const saveData = new User({
-      name: req?.body?.name,
-      email: req?.body?.email,
+      name: name,
+      email: email,
       password: hash,
-      phoneNumber: req?.body?.phoneNumber,
-      accountType: req?.body?.accountType,
+      phoneNumber: phoneNumber,
+      accountType: accountType,
       otpCode: OtpNumber,
     });
     saveData.save();
+    console.log(saveData)
 
     // ========================= NodeMailer ===================
     const apiKey = "77316142-6183407a";
@@ -195,7 +196,8 @@ router.post("/register", async (req, res) => {
 
     return res.status(200).send({ message: "Success", data: saveData._id });
   } catch (error) {
-    console.log("ERORR", error);
+    console.log("ERORR", error.name);
+    return res.status(400).json({ message: error.name })
   }
 });
 
@@ -215,7 +217,7 @@ router.post('/update-password', async (req, res) => {
     if (!dbPassword) {
       return res.status(400).send({ message: "Invalid password" });
     }
-    
+
     // 2. Hash password & Save to mongoose
     const hash = await bcrypt.hash(newPassword, 10);
     // console.log("newwww", hash);
@@ -234,10 +236,10 @@ router.post('/edit-profile', async (req, res) => {
   try {
     const { name, email, id } = req.body;
     const userData = await User.findOne({ _id: id });
-    if(userData?.name) {
+    if (userData?.name) {
       const datas = await User.updateOne({ _id: id }, { $set: { email: email, name: name } }, { new: true });
       return res.status(200).json({ message: 'success', data: datas })
-    } else{
+    } else {
       return res.status(400).json({ message: `User doesn't exist` });
     }
   } catch (error) {

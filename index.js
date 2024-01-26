@@ -54,9 +54,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // );
 // app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
-app.get("/", (req, res) => {
-  res.send("Fine");
-});
+
 
 // app.use(
 //   "/static",
@@ -64,6 +62,11 @@ app.get("/", (req, res) => {
 // );
 
 main();
+
+app.get("/", (req, res) => {
+  res.send("Fine");
+});
+
 
 app.use("/", require("./routes/index"));
 
