@@ -239,6 +239,7 @@ router.post('/update-password', async (req, res) => {
     //  RETURN Password Not Matched.
   } catch (error) {
     console.log('new Error', error);
+    return res.send({ message: error.name });
   }
 })
 
@@ -282,15 +283,24 @@ router.get("/verify-otp", async (req, res) => {
     } catch (error) {
       return res.json({ message: error["errors"][0] });
     }
-    const data = await User.findOne({ _id: userId }).select("otpCode name");
+    const data = await User.findOne({ _id: userId }).select("otpCode name email");
 
     if (data?.otpCode === otp) {
       const rs = await User.findOneAndUpdate(
         { _id: userId },
         { otpVerified: true }
       );
-      console.log("Update_Response", rs);
-      return res.send({ message: `${data?.name} your otp is verified` });
+
+      // 2.0 encode
+      let token1 = "";
+      jwt.encode(process.env.SECRET, data?.email, function (err, token) {
+        if (err) {
+          console.error(err.name, err.message);
+        } else {
+          token1 = token;
+        }
+      });
+      return res.send({ message: `${data?.name} your otp is verified`, data: token1 });
     }
     res.send({ message: "Invalid Otp" });
   } catch (error) {
