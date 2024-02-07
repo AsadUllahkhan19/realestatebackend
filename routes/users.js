@@ -1,10 +1,12 @@
 const express = require("express");
+const Property = require("../models/Property");
+const mongoose = require('mongoose');
 const router = express.Router();
 const yup = require("yup");
 const twilio = require("twilio");
 const bcrypt = require("bcrypt");
 const jwt = require("json-web-token");
-
+const SavedProperties = require("../models/SaveProperty")
 const User = require("../models/Users");
 // =====================================
 const nodemailer = require("nodemailer");
@@ -450,6 +452,96 @@ router.put('/reset-password', async (req, res) => {
   }
 });
 
+router.post("/save-property/:userId/:propertyId", async (req, res) => {
+	try{
+		console.log(SavedProperties)
+		let userId = req.params.userId
+		let propertyId = req.params.propertyId
+		const newSavedProperty = new SavedProperties({
+			userId,
+			propertyId
+		})
+		const result = await newSavedProperty.save()
+		res.json({
+			result,
+			message:"success"
+		}).
+		status(200).
+		end()
+	}catch(err){
+		console.log(err)
+	}
+})
+router.delete("/delete-save-property/:id", async (req, res) => {
+	try{
+		const ObjectId = mongoose.Types.ObjectId;
+		const result = await SavedProperties.deleteOne({
+			_id :new ObjectId(req.params.id)
+		})
+		res.json({
+			result,
+			message:"success"
+		}).
+		status(200).
+		end()
+	}catch(err){
+		console.log(err)
+	}
+})
+
+router.get("/get-one-save-property/:userId/:propertyId", async (req, res) => {
+	try{
+		let userId = req.params.userId
+		let propertyId = req.params.propertyId
+		const result = await SavedProperties.findOne({
+			userId: userId,
+			propertyId
+		})
+		res.json({
+			result,
+			message:"success"
+		}).
+		status(200).
+		end()
+	}catch(err){
+		console.log(err)
+	}
+})
+router.get("/get-save-property/:userId", async (req, res) => {
+	try{
+		let userId = req.params.userId
+		const result = await SavedProperties.aggregate([
+  {
+    $match: { userId: userId }
+  },
+  {
+    $project: { propertyId: 1, _id: 0 }
+  },
+]);	
+
+		const ObjectId = mongoose.Types.ObjectId;
+		const isValidId = mongoose.Types.ObjectId.isValid;
+		console.log(result)
+		let arr = result.map((obj) =>{
+			if (isValidId(obj?.propertyId)){
+			return	new ObjectId(obj?.propertyId)
+			}
+		})
+		const properties = await  Property.find({
+			_id :{
+				$in: arr
+			}
+		})
+		res.json({
+			properties,
+			message:"success"
+		}).
+		status(200).
+		end()
+	}catch(err){
+		console.log(err)
+	}
+})
 // router.get("/", (req, res) => {
 //   // const client = new twilio(process.env.ACCOUNTSID, process.env.AUTHTOKEN);
 //   client.messages
