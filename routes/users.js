@@ -360,7 +360,6 @@ router.post("/login", async (req, res) => {
   }
 });
 
-<<<<<<< HEAD
 router.get('/user-save-property', (req, res) => {
   try {
     const { userId, propertyId } = req.query;
@@ -372,7 +371,6 @@ router.get('/user-save-property', (req, res) => {
   }
 })
 
-=======
 router.post("/reset-password", async (req, res) => {
   try {
     const { email } = req.body;
@@ -555,7 +553,6 @@ router.get("/get-save-property/:userId", async (req, res) => {
 		console.log(err)
 	}
 })
->>>>>>> d72d6e6a3dd4a164fe4a06bf620aeb1360ef4642
 // router.get("/", (req, res) => {
 //   // const client = new twilio(process.env.ACCOUNTSID, process.env.AUTHTOKEN);
 //   client.messages
