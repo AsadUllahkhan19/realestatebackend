@@ -354,6 +354,17 @@ router.post("/login", async (req, res) => {
   }
 });
 
+router.get('/user-save-property', (req, res) => {
+  try {
+    const { userId, propertyId } = req.query;
+
+
+    
+  } catch (error) {
+    console.log('from_catch', error)
+  }
+})
+
 router.post("/reset-password", async (req, res) => {
   try {
     const { email } = req.body;

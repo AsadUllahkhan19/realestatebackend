@@ -379,8 +379,7 @@ router.put("/upload-media", async (req, res) => {
   } catch (error) {
     return res.status(400).send({ message: error.name });
   }
-}
-);
+});
 
 // router.get("/get-property", async (req, res) => {
 //   try {
@@ -697,6 +696,12 @@ router.get("/add-impressions-on-view", async (req, res) => {
   try {
     let yourDate = new Date();
     const newDate = yourDate.toISOString().split("T")[0];
+    if (req?.query?.propertyId === undefined) {
+      return res.status(400).send({ message: "please add propertyId." })
+    }
+    if (req?.query?.userId === undefined) {
+      return res.status(400).send({ message: "please add userId." })
+    }
     const data = new Impressions({
       propertyId: req?.query?.propertyId,
       userId: req?.query?.userId,
