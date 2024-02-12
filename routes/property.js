@@ -208,19 +208,19 @@ router.get("/get-property", async (req, res) => {
       // }
       return result;
     };
-    if(req?.query?.page !== undefined) {
+    if (req?.query?.page !== undefined) {
       page = req?.query?.page;
     }
     const skip = (page - 1) * 12;
-    let savedUp = []; 
+    let savedUp = [];
     // if (transform().length < 1) {
     //   savedUp = await Property.find();
     // } else {
     savedUp = await Property
-    .find({ $and: transform() })
-    .select("_id propertyDetails.title propertyDetails.areaSquare propertyDetails.ownerShipStatus typesAndPurpose.category propertyDetails.inclusivePrice amenities contactDetails.email upload.images locationAndAddress propertyDetails.InclusivePrice ownerId")
-    .limit(12)
-    .skip(skip);
+      .find({ $and: transform() })
+      .select("_id propertyDetails.title propertyDetails.areaSquare propertyDetails.ownerShipStatus typesAndPurpose.category propertyDetails.inclusivePrice amenities contactDetails.email upload.images locationAndAddress propertyDetails.InclusivePrice ownerId")
+      .limit(12)
+      .skip(skip);
     // }
     // console.log("heh", savedUp);
     console.log("query", transform());
@@ -359,30 +359,27 @@ router.put("/upload", async (req, res) => {
   }
 });
 
-router.put(
-  "/upload-media",
-  // imageUpload.array("photos", 2),
-  async (req, res) => {
-    try {
-      let videos = [];
-      const fd = req?.files?.map((item) => {
-        if (item.filename != "") {
-          return item.filename;
-        }
-      });
-      if (req?.body?.videos?.length > 0) {
-        videos = req?.body?.videos;
+router.put("/upload-media", async (req, res) => {
+  try {
+    let videos = [];
+    const fd = req?.files?.map((item) => {
+      if (item.filename != "") {
+        return item.filename;
       }
-      const uploadedData = await Property.findByIdAndUpdate(
-        "64f04ac7ab46955aa8032e37",
-        { $set: { images: fd, videos: videos } },
-        { new: true }
-      );
-      return res.send({ message: "success", data: uploadedData });
-    } catch (error) {
-      return res.status(400).send({ message: error.name });
+    });
+    if (req?.body?.videos?.length > 0) {
+      videos = req?.body?.videos;
     }
+    const uploadedData = await Property.findByIdAndUpdate(
+      "64f04ac7ab46955aa8032e37",
+      { $set: { images: fd, videos: videos } },
+      { new: true }
+    );
+    return res.send({ message: "success", data: uploadedData });
+  } catch (error) {
+    return res.status(400).send({ message: error.name });
   }
+}
 );
 
 // router.get("/get-property", async (req, res) => {
@@ -458,6 +455,7 @@ router.put(
 // });
 
 //  sub category count
+
 router.get("/get-shops-count", async (req, res) => {
   try {
     const count = await Property.countDocuments({
@@ -682,6 +680,7 @@ router.get("/get-user-clicks/:id", async (req, res) => {
     return res.json({ message: error.name });
   }
 });
+
 router.post("/serach-property-by-searchbar", async (req, res) => {
   try {
     console.log(req.body.value);
@@ -721,26 +720,22 @@ router.get("/get-impressions-on-view/:id", async (req, res) => {
   }
 });
 
-router.post(
-  "/add-photos",
-  // imageUpload.array("photos", 12),
-  async (req, res) => {
-    try {
-      console.log(req?.files);
-      if (req?.files?.length < 1) {
-        return res.status(400).send({ message: "image required" });
-      }
-      const fd = req?.files?.map((item) => {
-        if (item.filename != "") {
-          return item.filename;
-        }
-      });
-      res.status(200).json({ message: "success", data: fd });
-    } catch (error) {
-      console.log(error);
+router.post("/add-photos", async (req, res) => {
+  try {
+    console.log(req?.files);
+    if (req?.files?.length < 1) {
+      return res.status(400).send({ message: "image required" });
     }
+    const fd = req?.files?.map((item) => {
+      if (item.filename != "") {
+        return item.filename;
+      }
+    });
+    res.status(200).json({ message: "success", data: fd });
+  } catch (error) {
+    console.log(error);
   }
-);
+});
 
 router.get("/delete-photo/:id", (req, res) => {
   try {

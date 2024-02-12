@@ -16,56 +16,52 @@ const { google } = require("googleapis");
 const { errorMonitor } = require("nodemailer/lib/mailer");
 const OAuth2 = google.auth.OAuth2;
 
-const createTransporter = async () => {
-  return transporter;
-};
-
 //create mail transported
 const createMailTransporter = async () => {
   const apiKey = "77316142-6183407a";
-    const domain = "sandbox799a3f485fd44f9081df7fa2756c2159.mailgun.org";
+  const domain = "sandbox799a3f485fd44f9081df7fa2756c2159.mailgun.org";
 
-    const ClientId = "832524542097-m7kqvp5121159vsl3clpq6trbt4uk6gf.apps.googleusercontent.com";
-    const ClientSecret = "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";
+  const ClientId = "832524542097-m7kqvp5121159vsl3clpq6trbt4uk6gf.apps.googleusercontent.com";
+  const ClientSecret = "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";
 
-    const oauth2Client = new OAuth2(
-      ClientId,
-      ClientSecret,
-      "https://developers.google.com/oauthplayground"
-    );
+  const oauth2Client = new OAuth2(
+    ClientId,
+    ClientSecret,
+    "https://developers.google.com/oauthplayground"
+  );
 
-    oauth2Client.setCredentials({
-      refresh_token:
+  oauth2Client.setCredentials({
+    refresh_token:
+      "1//04tNKOIERQqAECgYIARAAGAQSNwF-L9Ir5Tr66fdik3S_af1088-5xIzBrnbL-QVCfgNz6EoazeZUqENCctlcm6WvaM7A81NHH1U",
+  });
+
+  const accessToken = await new Promise((resolve, reject) => {
+    oauth2Client.getAccessToken((err, token) => {
+      if (err) {
+        console.log("yyyyyyyyy", err);
+        reject();
+      }
+      console.log("yesss", err);
+      resolve(token);
+    });
+  });
+
+  const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      type: "OAuth2",
+      user: "khanbahadur55555@gmail.com",
+      accessToken,
+      clientId:
+        "832524542097-m7kqvp5121159vsl3clpq6trbt4uk6gf.apps.googleusercontent.com",
+      clientSecret:
+        "832524542097-m7kqvp5121159vsl3clpq6trbt4uk6gf.apps.googleusercontent.com",
+      refreshToken:
         "1//04tNKOIERQqAECgYIARAAGAQSNwF-L9Ir5Tr66fdik3S_af1088-5xIzBrnbL-QVCfgNz6EoazeZUqENCctlcm6WvaM7A81NHH1U",
-    });
+    },
+  });
 
-    const accessToken = await new Promise((resolve, reject) => {
-      oauth2Client.getAccessToken((err, token) => {
-        if (err) {
-          console.log("yyyyyyyyy", err);
-          reject();
-        }
-        console.log("yesss", err);
-        resolve(token);
-      });
-    });
-
-    const transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        type: "OAuth2",
-        user: "khanbahadur55555@gmail.com",
-        accessToken,
-        clientId:
-          "832524542097-m7kqvp5121159vsl3clpq6trbt4uk6gf.apps.googleusercontent.com",
-        clientSecret:
-          "832524542097-m7kqvp5121159vsl3clpq6trbt4uk6gf.apps.googleusercontent.com",
-        refreshToken:
-          "1//04tNKOIERQqAECgYIARAAGAQSNwF-L9Ir5Tr66fdik3S_af1088-5xIzBrnbL-QVCfgNz6EoazeZUqENCctlcm6WvaM7A81NHH1U",
-      },
-    });
-
-    return transporter;
+  return transporter;
 }
 
 // Register Method Route
@@ -151,8 +147,6 @@ router.post("/register", async (req, res) => {
     const apiKey = "77316142-6183407a";
     const domain = "sandbox799a3f485fd44f9081df7fa2756c2159.mailgun.org";
 
-    
-
     const mailData = {
       subject: "MacWorld OTP Verification",
       text: `Your verification Otp is ${OtpNumber}`,
@@ -166,9 +160,9 @@ router.post("/register", async (req, res) => {
       // verify connection configuration
       transporter.verify(function (error, success) {
         if (success) {
-          resolve(success)
+          resolve(success);
         }
-        reject(error)
+        reject(error);
       })
     })
     if (!server) {
@@ -179,14 +173,14 @@ router.post("/register", async (req, res) => {
       // send mail
       transporter.sendMail(mailData).then((info, err) => {
         if (info.response.includes('250')) {
-          resolve(true)
+          resolve(true);
         }
-        reject(err)
+        reject(err);
       })
     })
 
     if (!success) {
-      res.status(500).json({ error: 'Error sending email' })
+      res.status(500).json({ error: 'Error sending email' });
     }
 
     // ===========================================================
@@ -372,12 +366,12 @@ router.post("/reset-password", async (req, res) => {
 
     // 2. Hash password & Save to mongoose
     // const hash = await bcrypt.hash(password, 10);
-    
+
     const OtpNumber = generateNewOTP();
-    
+
     // 1. Add data to collection
     const saveData = await User.updateOne({ _id: user.id }, { $set: { otpCode: OtpNumber, otpVerified: false } }, { new: true });
-    
+
     console.log("OTP value updated");
 
     const transporter = await createMailTransporter();
@@ -388,7 +382,7 @@ router.post("/reset-password", async (req, res) => {
       to: email,
       from: 'macworldtechnology@gmail.com'
     }
-    
+
     const server = await new Promise((resolve, reject) => {
       // verify connection configuration
       transporter.verify(function (error, success) {
@@ -442,7 +436,7 @@ router.put('/reset-password', async (req, res) => {
     const hash = await bcrypt.hash(newPassword, 10);
     // console.log("newwww", hash);
     // 3. IF password same
-    const datas = await User.updateOne({ _id: userId }, { $set: { password: hash } }, { new: true });
+    const datas = await User.updateOne({ _id: userId }, { $set: { password: hash, otpVerified: true } }, { new: true });
     //       Update Password
     //    ELSE  
 
@@ -453,95 +447,153 @@ router.put('/reset-password', async (req, res) => {
 });
 
 router.post("/save-property/:userId/:propertyId", async (req, res) => {
-	try{
-		console.log(SavedProperties)
-		let userId = req.params.userId
-		let propertyId = req.params.propertyId
-		const newSavedProperty = new SavedProperties({
-			userId,
-			propertyId
-		})
-		const result = await newSavedProperty.save()
-		res.json({
-			result,
-			message:"success"
-		}).
-		status(200).
-		end()
-	}catch(err){
-		console.log(err)
-	}
-})
+  try {
+    console.log(SavedProperties)
+    let userId = req.params.userId
+    let propertyId = req.params.propertyId
+    const newSavedProperty = new SavedProperties({
+      userId,
+      propertyId
+    })
+    const result = await newSavedProperty.save()
+    res.json({
+      result,
+      message: "success"
+    }).
+      status(200).
+      end()
+  } catch (err) {
+    console.log(err)
+  }
+});
+
 router.delete("/delete-save-property/:id", async (req, res) => {
-	try{
-		const ObjectId = mongoose.Types.ObjectId;
-		const result = await SavedProperties.deleteOne({
-			_id :new ObjectId(req.params.id)
-		})
-		res.json({
-			result,
-			message:"success"
-		}).
-		status(200).
-		end()
-	}catch(err){
-		console.log(err)
-	}
-})
+  try {
+    const ObjectId = mongoose.Types.ObjectId;
+    const result = await SavedProperties.deleteOne({
+      _id: new ObjectId(req.params.id)
+    })
+    res.json({
+      result,
+      message: "success"
+    }).
+      status(200).
+      end()
+  } catch (err) {
+    console.log(err)
+  }
+});
 
 router.get("/get-one-save-property/:userId/:propertyId", async (req, res) => {
-	try{
-		let userId = req.params.userId
-		let propertyId = req.params.propertyId
-		const result = await SavedProperties.findOne({
-			userId: userId,
-			propertyId
-		})
-		res.json({
-			result,
-			message:"success"
-		}).
-		status(200).
-		end()
-	}catch(err){
-		console.log(err)
-	}
-})
-router.get("/get-save-property/:userId", async (req, res) => {
-	try{
-		let userId = req.params.userId
-		const result = await SavedProperties.aggregate([
-  {
-    $match: { userId: userId }
-  },
-  {
-    $project: { propertyId: 1, _id: 0 }
-  },
-]);	
+  try {
+    let userId = req.params.userId
+    let propertyId = req.params.propertyId
+    const result = await SavedProperties.findOne({
+      userId: userId,
+      propertyId
+    })
+    res.json({
+      result,
+      message: "success"
+    }).
+      status(200).
+      end()
+  } catch (err) {
+    console.log(err)
+  }
+});
 
-		const ObjectId = mongoose.Types.ObjectId;
-		const isValidId = mongoose.Types.ObjectId.isValid;
-		console.log(result)
-		let arr = result.map((obj) =>{
-			if (isValidId(obj?.propertyId)){
-			return	new ObjectId(obj?.propertyId)
-			}
-		})
-		const properties = await  Property.find({
-			_id :{
-				$in: arr
-			}
-		})
-		res.json({
-			properties,
-			message:"success"
-		}).
-		status(200).
-		end()
-	}catch(err){
-		console.log(err)
-	}
+router.get("/get-save-property/:userId", async (req, res) => {
+  try {
+    let userId = req.params.userId
+    const result = await SavedProperties.aggregate([
+      {
+        $match: { userId: userId }
+      },
+      {
+        $project: { propertyId: 1, _id: 0 }
+      },
+    ]);
+
+    const ObjectId = mongoose.Types.ObjectId;
+    const isValidId = mongoose.Types.ObjectId.isValid;
+    console.log(result)
+    let arr = result.map((obj) => {
+      if (isValidId(obj?.propertyId)) {
+        return new ObjectId(obj?.propertyId)
+      }
+    })
+    const properties = await Property.find({
+      _id: {
+        $in: arr
+      }
+    })
+    res.json({
+      properties,
+      message: "success"
+    }).
+      status(200).
+      end()
+  } catch (err) {
+    console.log(err)
+  }
+});
+
+router.post("/social-login", async (req, res) => {
+  const { email, name, image } = req.body;
+
+  const checkEmail = await User.findOne({ email: email });
+
+  // 2.0 encode
+  let token1 = "";
+  jwt.encode(process.env.SECRET, email, function (err, token) {
+    if (err) {
+      console.error(err.name, err.message);
+    } else {
+      token1 = token;
+    }
+  });
+
+  if (checkEmail !== null) {
+    return res.status(200).json({
+      message: "email exists",
+      data: {
+        token: token1,
+        userData: {
+          email: checkEmail.email,
+          name: checkEmail.name,
+          _id: checkEmail._id,
+          photo: image
+        }
+      }
+    });
+  }
+
+  const OtpNumber = generateNewOTP();
+
+  const saveData = new User({
+    name: name,
+    email: email,
+    otpCode: OtpNumber,
+    otpVerified: true,
+  });
+  saveData.save();
+
+  return res.status(200).json({
+    message: "social user created success",
+    data: {
+      token: token1,
+      userData: {
+        email: saveData.email,
+        name: saveData.name,
+        _id: saveData._id,
+        photo: image
+      }
+    }
+  });
+
 })
+
 // router.get("/", (req, res) => {
 //   // const client = new twilio(process.env.ACCOUNTSID, process.env.AUTHTOKEN);
 //   client.messages
@@ -555,7 +607,7 @@ router.get("/get-save-property/:userId", async (req, res) => {
 // });
 
 const generateNewOTP = () => {
-  
+
   const minm = 10000;
   const maxm = 99999;
   const OtpNumber = Math.floor(Math.random() * (maxm - minm + 1)) + minm;
