@@ -348,6 +348,17 @@ router.post("/login", async (req, res) => {
   }
 });
 
+router.get('/user-save-property', (req, res) => {
+  try {
+    const { userId, propertyId } = req.query;
+
+
+    
+  } catch (error) {
+    console.log('from_catch', error)
+  }
+})
+
 // router.get("/", (req, res) => {
 //   // const client = new twilio(process.env.ACCOUNTSID, process.env.AUTHTOKEN);
 //   client.messages
