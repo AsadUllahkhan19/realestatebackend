@@ -1,10 +1,12 @@
 const express = require("express");
+const Property = require("../models/Property");
+const mongoose = require('mongoose');
 const router = express.Router();
 const yup = require("yup");
 const twilio = require("twilio");
 const bcrypt = require("bcrypt");
 const jwt = require("json-web-token");
-
+const SavedProperties = require("../models/SaveProperty")
 const User = require("../models/Users");
 // =====================================
 const nodemailer = require("nodemailer");
@@ -17,6 +19,55 @@ const OAuth2 = google.auth.OAuth2;
 const createTransporter = async () => {
   return transporter;
 };
+
+//create mail transported
+const createMailTransporter = async () => {
+  const apiKey = "77316142-6183407a";
+    const domain = "sandbox799a3f485fd44f9081df7fa2756c2159.mailgun.org";
+
+    const ClientId = "832524542097-m7kqvp5121159vsl3clpq6trbt4uk6gf.apps.googleusercontent.com";
+    const ClientSecret = "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";
+
+    const oauth2Client = new OAuth2(
+      ClientId,
+      ClientSecret,
+      "https://developers.google.com/oauthplayground"
+    );
+
+    oauth2Client.setCredentials({
+      refresh_token:
+        "1//04tNKOIERQqAECgYIARAAGAQSNwF-L9Ir5Tr66fdik3S_af1088-5xIzBrnbL-QVCfgNz6EoazeZUqENCctlcm6WvaM7A81NHH1U",
+    });
+
+    const accessToken = await new Promise((resolve, reject) => {
+      oauth2Client.getAccessToken((err, token) => {
+        if (err) {
+          console.log("yyyyyyyyy", err);
+          reject();
+        }
+        console.log("yesss", err);
+        resolve(token);
+      });
+    });
+
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        type: "OAuth2",
+        user: "khanbahadur55555@gmail.com",
+        accessToken,
+        clientId:
+          "832524542097-m7kqvp5121159vsl3clpq6trbt4uk6gf.apps.googleusercontent.com",
+        clientSecret:
+          "832524542097-m7kqvp5121159vsl3clpq6trbt4uk6gf.apps.googleusercontent.com",
+        refreshToken:
+          "1//04tNKOIERQqAECgYIARAAGAQSNwF-L9Ir5Tr66fdik3S_af1088-5xIzBrnbL-QVCfgNz6EoazeZUqENCctlcm6WvaM7A81NHH1U",
+      },
+    });
+
+    return transporter;
+}
+
 // Register Method Route
 router.post("/register", async (req, res) => {
   try {
@@ -82,9 +133,7 @@ router.post("/register", async (req, res) => {
     // Create a Twilio client
     // const client = new twilio(process.env.ACCOUNTSID, process.env.AUTHTOKEN);
 
-    const minm = 10000;
-    const maxm = 99999;
-    const OtpNumber = Math.floor(Math.random() * (maxm - minm + 1)) + minm;
+    const OtpNumber = generateNewOTP();
 
     // 1. Add data to collection
     const saveData = new User({
@@ -102,31 +151,7 @@ router.post("/register", async (req, res) => {
     const apiKey = "77316142-6183407a";
     const domain = "sandbox799a3f485fd44f9081df7fa2756c2159.mailgun.org";
 
-    const ClientId =
-      "832524542097-m7kqvp5121159vsl3clpq6trbt4uk6gf.apps.googleusercontent.com";
-    const ClientSecret = "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";
-
-    const oauth2Client = new OAuth2(
-      ClientId,
-      ClientSecret,
-      "https://developers.google.com/oauthplayground"
-    );
-
-    oauth2Client.setCredentials({
-      refresh_token:
-        "1//04tNKOIERQqAECgYIARAAGAQSNwF-L9Ir5Tr66fdik3S_af1088-5xIzBrnbL-QVCfgNz6EoazeZUqENCctlcm6WvaM7A81NHH1U",
-    });
-
-    const accessToken = await new Promise((resolve, reject) => {
-      oauth2Client.getAccessToken((err, token) => {
-        if (err) {
-          console.log("yyyyyyyyy", err);
-          reject();
-        }
-        console.log("yesss", err);
-        resolve(token);
-      });
-    });
+    
 
     const mailData = {
       subject: "MacWorld OTP Verification",
@@ -135,20 +160,7 @@ router.post("/register", async (req, res) => {
       from: 'macworldtechnology@gmail.com'
     }
 
-    const transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        type: "OAuth2",
-        user: "khanbahadur55555@gmail.com",
-        accessToken,
-        clientId:
-          "832524542097-m7kqvp5121159vsl3clpq6trbt4uk6gf.apps.googleusercontent.com",
-        clientSecret:
-          "832524542097-m7kqvp5121159vsl3clpq6trbt4uk6gf.apps.googleusercontent.com",
-        refreshToken:
-          "1//04tNKOIERQqAECgYIARAAGAQSNwF-L9Ir5Tr66fdik3S_af1088-5xIzBrnbL-QVCfgNz6EoazeZUqENCctlcm6WvaM7A81NHH1U",
-      },
-    });
+    const transporter = await createMailTransporter();
 
     const server = await new Promise((resolve, reject) => {
       // verify connection configuration
@@ -348,6 +360,7 @@ router.post("/login", async (req, res) => {
   }
 });
 
+<<<<<<< HEAD
 router.get('/user-save-property', (req, res) => {
   try {
     const { userId, propertyId } = req.query;
@@ -359,6 +372,190 @@ router.get('/user-save-property', (req, res) => {
   }
 })
 
+=======
+router.post("/reset-password", async (req, res) => {
+  try {
+    const { email } = req.body;
+    const user = await User.findOne({ email: email });
+
+    // console.log("Email", checkEmail);
+    if (user == null) {
+      return res.status(403).json({ message: "Email does not exist." });
+    }
+
+    // 2. Hash password & Save to mongoose
+    // const hash = await bcrypt.hash(password, 10);
+    
+    const OtpNumber = generateNewOTP();
+    
+    // 1. Add data to collection
+    const saveData = await User.updateOne({ _id: user.id }, { $set: { otpCode: OtpNumber, otpVerified: false } }, { new: true });
+    
+    console.log("OTP value updated");
+
+    const transporter = await createMailTransporter();
+
+    const mailData = {
+      subject: "MacWorld OTP Verification",
+      text: `Your verification Otp is ${OtpNumber}`,
+      to: email,
+      from: 'macworldtechnology@gmail.com'
+    }
+    
+    const server = await new Promise((resolve, reject) => {
+      // verify connection configuration
+      transporter.verify(function (error, success) {
+        if (success) {
+          resolve(success)
+        }
+        reject(error)
+      });
+    })
+    if (!server) {
+      res.status(500).json({ error: 'Error failed' })
+    }
+
+    const success = await new Promise((resolve, reject) => {
+      // send mail
+      transporter.sendMail(mailData).then((info, err) => {
+        if (info.response.includes('250')) {
+          resolve(true)
+        }
+        reject(err)
+      })
+    });
+
+    if (!success) {
+      res.status(500).json({ error: 'Error sending email' })
+    }
+
+    return res.status(200).send({ message: "Success", data: user.id });
+  } catch (error) {
+    console.log("Error", error);
+  }
+});
+
+router.put('/reset-password', async (req, res) => {
+  try {
+    const { userId, newPassword } = req.body;
+    // console.log("Request received", userId, newPassword);
+    if (newPassword == "" || newPassword === null || newPassword === undefined) {
+      return res.status(400).send({ message: "New Password is required." });
+    }
+    if (userId == "" || userId === null || userId === undefined) {
+      return res.status(400).send({ message: "userId is required." });
+    }
+    const userData = await User.findOne({ _id: userId });
+
+    if (!userData) {
+      return res.status(400).json({ message: 'userId is not a valid user.', data: datas });
+    }
+
+    // 2. Hash password & Save to mongoose
+    const hash = await bcrypt.hash(newPassword, 10);
+    // console.log("newwww", hash);
+    // 3. IF password same
+    const datas = await User.updateOne({ _id: userId }, { $set: { password: hash } }, { new: true });
+    //       Update Password
+    //    ELSE  
+
+    return res.status(200).json({ message: 'success', data: datas });
+  } catch (error) {
+    console.log('Error reset password', error);
+  }
+});
+
+router.post("/save-property/:userId/:propertyId", async (req, res) => {
+	try{
+		console.log(SavedProperties)
+		let userId = req.params.userId
+		let propertyId = req.params.propertyId
+		const newSavedProperty = new SavedProperties({
+			userId,
+			propertyId
+		})
+		const result = await newSavedProperty.save()
+		res.json({
+			result,
+			message:"success"
+		}).
+		status(200).
+		end()
+	}catch(err){
+		console.log(err)
+	}
+})
+router.delete("/delete-save-property/:id", async (req, res) => {
+	try{
+		const ObjectId = mongoose.Types.ObjectId;
+		const result = await SavedProperties.deleteOne({
+			_id :new ObjectId(req.params.id)
+		})
+		res.json({
+			result,
+			message:"success"
+		}).
+		status(200).
+		end()
+	}catch(err){
+		console.log(err)
+	}
+})
+
+router.get("/get-one-save-property/:userId/:propertyId", async (req, res) => {
+	try{
+		let userId = req.params.userId
+		let propertyId = req.params.propertyId
+		const result = await SavedProperties.findOne({
+			userId: userId,
+			propertyId
+		})
+		res.json({
+			result,
+			message:"success"
+		}).
+		status(200).
+		end()
+	}catch(err){
+		console.log(err)
+	}
+})
+router.get("/get-save-property/:userId", async (req, res) => {
+	try{
+		let userId = req.params.userId
+		const result = await SavedProperties.aggregate([
+  {
+    $match: { userId: userId }
+  },
+  {
+    $project: { propertyId: 1, _id: 0 }
+  },
+]);	
+
+		const ObjectId = mongoose.Types.ObjectId;
+		const isValidId = mongoose.Types.ObjectId.isValid;
+		console.log(result)
+		let arr = result.map((obj) =>{
+			if (isValidId(obj?.propertyId)){
+			return	new ObjectId(obj?.propertyId)
+			}
+		})
+		const properties = await  Property.find({
+			_id :{
+				$in: arr
+			}
+		})
+		res.json({
+			properties,
+			message:"success"
+		}).
+		status(200).
+		end()
+	}catch(err){
+		console.log(err)
+	}
+})
+>>>>>>> d72d6e6a3dd4a164fe4a06bf620aeb1360ef4642
 // router.get("/", (req, res) => {
 //   // const client = new twilio(process.env.ACCOUNTSID, process.env.AUTHTOKEN);
 //   client.messages
@@ -370,5 +567,14 @@ router.get('/user-save-property', (req, res) => {
 //     .then((message) => console.log(`Message SID: ${message.sid}`))
 //     .catch((error) => console.error("Anas bhai", error));
 // });
+
+const generateNewOTP = () => {
+  
+  const minm = 10000;
+  const maxm = 99999;
+  const OtpNumber = Math.floor(Math.random() * (maxm - minm + 1)) + minm;
+
+  return OtpNumber;
+}
 
 module.exports = router;
