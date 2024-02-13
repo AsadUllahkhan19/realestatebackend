@@ -4,13 +4,16 @@ const yup = require("yup");
 const fs = require("fs");
 const path = require("path");
 const mongoose = require("mongoose");
-
+require('dotenv').config();
 const Users = require("../models/Users");
 const Property = require("../models/Property");
 // const imageUpload = require("../middlewares/Multer");
 const verifyToken = require("../middlewares/UserVerify");
 const Clicks = require("../models/Clicks");
 const Impressions = require("../models/Impressions");
+
+const LATITUDE = 24.466667;
+const LONGITUDE = 54.366669;
 
 router.post("/upload", async (req, res) => {
   try {
@@ -807,5 +810,39 @@ router.get("/delete-property/:id", async (req, res) => {
     return res.status(400).json({ message: error.name });
   }
 });
+
+router.post('/location-suggestions', async (req, res) => {
+  // console.log("WOrking");
+  const axios = require("axios");
+  const apikey = process.env.GOOGLE_API_KEY;
+  
+    const { value } = req.body;
+    let addressList = [];
+    try {
+      const response = await axios.post(
+        `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${value}&location=${LATITUDE},${LONGITUDE}&radius=500&types=establishment&key=${apikey}`
+      );
+      if (response.data) {
+        let Data = response.data["predictions"];
+
+        for (let element of Data) {
+          temp = {
+            address: element["structured_formatting"]["main_text"],
+            fulladdress: element["description"],
+          };
+          addressList.push(temp);
+        }
+
+        addressList.length !== 0
+          ? res.status(200).send(addressList)
+          : res.status(200).send([]);
+          // console.log("Address list", addressList);
+      } else {
+      }
+    } catch (error) {
+      // Handle errors if the request fails
+      res.status(500).send(error);
+    }
+})
 
 module.exports = router;
