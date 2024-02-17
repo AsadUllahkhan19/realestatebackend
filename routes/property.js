@@ -777,6 +777,7 @@ router.post("/update-property", async (req, res) => {
           propertyDetails: req.body.propertyDetails,
           amenities: req.body.amenities,
           locationAndAddress: req.body.locationAndAddress,
+          typesAndPurpose: req.body.typesAndPurpose
         },
       }
 
