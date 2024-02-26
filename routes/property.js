@@ -838,11 +838,11 @@ router.get("/category-counts", async (req, res) => {
   // console.log("length requested before", req.params.category);
   try {
     const catLength = {
-      commercial : (await Property.find({ 'typesAndPurpose.category': "commercial" })).length,
-      apartment : (await Property.find({ 'typesAndPurpose.category': "apartment" })).length,
-      villa : (await Property.find({ 'typesAndPurpose.category': "villa" })).length,
-      residential : (await Property.find({ 'typesAndPurpose.category': "residential" })).length,
-      townhouse : (await Property.find({ 'typesAndPurpose.category': "townhouse" })).length,
+      commercial : (await Property.find({ 'typesAndPurpose.category': 'commercial' })).length,
+      apartment : (await Property.find({ 'typesAndPurpose.subCategory': 'apartment' })).length,
+      villa : (await Property.find({ 'typesAndPurpose.subCategory': 'villa' })).length,
+      residential : (await Property.find({ 'typesAndPurpose.category': 'residential' })).length,
+      townhouse : (await Property.find({ 'typesAndPurpose.subCategory': 'townhouse' })).length,
     }
     // const result = await Property.find({ 'typesAndPurpose.category': req.params.category });
     // .skip(0)
