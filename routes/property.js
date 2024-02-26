@@ -117,7 +117,6 @@ router.post("/upload", async (req, res) => {
 
 router.get("/get-property", async (req, res) => {
   try {
-    let page = 1;
     const transform = () => {
       let result = [];
       if (req?.query?.category == "all") {
@@ -130,20 +129,20 @@ router.get("/get-property", async (req, res) => {
       }
       if (req?.query?.area != undefined) {
         let data = {};
-        const minArea = req?.query?.area?.split("|")[0];
-        const maxArea = req?.query?.area?.split("|")[1];
+        const minArea = req?.query?.area?.split('|')[0]
+        const maxArea = req?.query?.area?.split('|')[1]
 
-        if (minArea != "" && maxArea != "") {
+        if (minArea != '' && maxArea != '') {
           data["propertyDetails.areaSquare"] = { $lte: maxArea, $gte: minArea };
-        } else if (minArea != "") {
+        } else if (minArea != '') {
           data["propertyDetails.areaSquare"] = { $gte: minArea };
-        } else if (maxArea != "") {
+        } else if (maxArea != '') {
           data["propertyDetails.areaSquare"] = { $lte: maxArea };
         }
         result.push(data);
       }
       if (req?.query?.bedRooms != undefined) {
-        let data2 = {};
+        let data2 = {};;
         data2["amenities"] = {
           $elemMatch: {
             name: "bedRooms",
@@ -159,16 +158,13 @@ router.get("/get-property", async (req, res) => {
       }
       if (req?.query?.price != undefined) {
         let data = {};
-        const minPrice = req?.query?.price?.split("|")[0];
-        const maxPrice = req?.query?.price?.split("|")[1];
-        if (minPrice != "" && maxPrice != "") {
-          data["propertyDetails.InclusivePrice"] = {
-            $lte: maxPrice,
-            $gte: minPrice,
-          };
-        } else if (minPrice != "") {
+        const minPrice = req?.query?.price?.split('|')[0]
+        const maxPrice = req?.query?.price?.split('|')[1]
+        if (minPrice != '' && maxPrice != '') {
+          data["propertyDetails.InclusivePrice"] = { $lte: maxPrice, $gte: minPrice };
+        } else if (minPrice != '') {
           data["propertyDetails.InclusivePrice"] = { $gte: minPrice };
-        } else if (maxPrice != "") {
+        } else if (maxPrice != '') {
           data["propertyDetails.InclusivePrice"] = { $lte: maxPrice };
         }
         result.push(data);
@@ -211,22 +207,14 @@ router.get("/get-property", async (req, res) => {
       // }
       return result;
     };
-    if (req?.query?.page !== undefined) {
-      page = req?.query?.page;
-    }
-    const skip = (page - 1) * 12;
     let savedUp = [];
     // if (transform().length < 1) {
     //   savedUp = await Property.find();
     // } else {
-    savedUp = await Property
-      .find({ $and: transform() })
-      .select("_id propertyDetails.title propertyDetails.areaSquare propertyDetails.ownerShipStatus typesAndPurpose.category propertyDetails.inclusivePrice amenities contactDetails.email upload.images locationAndAddress propertyDetails.InclusivePrice ownerId")
-      .limit(12)
-      .skip(skip);
+    savedUp = await Property.find({ $and: transform() }).select("_id propertyDetails.title propertyDetails.areaSquare propertyDetails.ownerShipStatus typesAndPurpose.category propertyDetails.inclusivePrice amenities contactDetails.email upload.images locationAndAddress propertyDetails.InclusivePrice");
     // }
-    // console.log("heh", savedUp);
-    console.log("query", transform());
+    console.log("heh", savedUp);
+    // console.log("query", transform());
     // .select('typesAndPurpose.purpose locationAndAddress.location propertyDetails.title propertyDetails.areaSquare propertyDetails.bedRooms propertyDetails.bathRooms propertyDetails.InclusivePrice locationAndAddress.address');
     return res.send({ message: "success", data: savedUp });
   } catch (error) {
