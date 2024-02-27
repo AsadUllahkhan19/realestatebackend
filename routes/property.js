@@ -842,7 +842,7 @@ router.get("/category-counts", async (req, res) => {
       apartment : (await Property.find({ 'typesAndPurpose.subCategory': 'apartment' })).length,
       villa : (await Property.find({ 'typesAndPurpose.subCategory': 'villa' })).length,
       residential : (await Property.find({ 'typesAndPurpose.category': 'residential' })).length,
-      townhouse : (await Property.find({ 'typesAndPurpose.subCategory': 'townhouse' })).length,
+      townhouse : (await Property.find({ 'typesAndPurpose.subCategory': 'townHouse' })).length,
     }
     // const result = await Property.find({ 'typesAndPurpose.category': req.params.category });
     // .skip(0)
