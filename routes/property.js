@@ -652,9 +652,20 @@ router.get("/get-impressions-count/:email", async (req, res) => {
 
 router.get("/property-list", async (req, res) => {
   try {
-    const userEmail = req.query.userEmail;
-
-    const result = await Property.find({ "contactDetails.email": userEmail });
+    const {userEmail, purpose, category } = req.query;
+    // console.log("Request recieved", req.query);
+    const query = {
+      "contactDetails.email": userEmail
+    };
+    
+    if (purpose) {
+      query["typesAndPurpose.purpose"] = purpose;
+    }
+    
+    if (category) {
+      query["typesAndPurpose.category"] = category;
+    }
+    const result = await Property.find(query);
     return res.status(200).send({ message: "success", data: result });
   } catch (error) {
     console.log(error);
