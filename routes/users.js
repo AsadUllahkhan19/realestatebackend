@@ -241,10 +241,10 @@ router.post('/update-password', async (req, res) => {
 
 router.post('/edit-profile', async (req, res) => {
   try {
-    const { name, email, id, photo } = req.body;
+    const { name, email, id, photo, photoName } = req.body;
     const userData = await User.findOne({ _id: id });
     if (userData?.name) {
-      const datas = await User.updateOne({ _id: id }, { $set: { email: email, name: name, photo } }, { new: true });
+      const datas = await User.updateOne({ _id: id }, { $set: { email: email, name: name, photo, photoName } }, { new: true });
       return res.status(200).json({ message: 'success', data: datas })
     } else {
       return res.status(400).json({ message: `User doesn't exist` });
@@ -340,13 +340,13 @@ router.post("/login", async (req, res) => {
         console.log("tokenEncode", token);
       }
     });
-    const { accountType, phoneNumber, name, _id, photo } = userData;
+    const { accountType, phoneNumber, name, _id, photo, photoName } = userData;
     // 3. Return token and user Credentials.
     return res.send({
       message: "Successful",
       data: {
         token: token1,
-        userData: { accountType, phoneNumber, name, _id, email, photo },
+        userData: { accountType, phoneNumber, name, _id, email, photo, photoName },
       },
     });
   } catch (error) {

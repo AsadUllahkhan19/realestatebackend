@@ -9,7 +9,8 @@ const UserSchema = new mongoose.Schema({
     otpVerified: { type: Boolean, default: false },
     createdAt: { type: Date, default: Date.now() },
     otpCode: String,
-    photo: String
+    photo: String,
+    photoName: String
 })
 
 const Users = mongoose.model('User', UserSchema)
