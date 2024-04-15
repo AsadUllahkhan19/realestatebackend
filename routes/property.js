@@ -652,16 +652,16 @@ router.get("/get-impressions-count/:email", async (req, res) => {
 
 router.get("/property-list", async (req, res) => {
   try {
-    const {userEmail, purpose, category } = req.query;
+    const { userEmail, purpose, category } = req.query;
     // console.log("Request recieved", req.query);
     const query = {
       "contactDetails.email": userEmail
     };
-    
+
     if (purpose) {
       query["typesAndPurpose.purpose"] = purpose;
     }
-    
+
     if (category) {
       query["typesAndPurpose.category"] = category;
     }
@@ -696,24 +696,34 @@ router.post("/serach-property-by-searchbar", async (req, res) => {
 
 router.get("/add-impressions-on-view", async (req, res) => {
   try {
+
     let yourDate = new Date();
     const newDate = yourDate.toISOString().split("T")[0];
-    if (req?.query?.propertyId === undefined) {
+    if (req?.query?.propertyId == undefined) {
       return res.status(400).send({ message: "please add propertyId." })
     }
-    if (req?.query?.userId === undefined) {
-      return res.status(400).send({ message: "please add userId." })
+    // if (req?.query?.userId == undefined) {
+    //   return res.status(400).send({ message: "please add userId." })
+    // }
+    let data;
+    if (req?.query?.userId == 'undefined') {
+      data = new Impressions({
+        propertyId: req?.query?.propertyId,
+        clicks: 1,
+        date: newDate,
+      });
+    } else {
+      data = new Impressions({
+        propertyId: req?.query?.propertyId,
+        userId: req?.query?.userId,
+        clicks: 1,
+        date: newDate,
+      });
     }
-    const data = new Impressions({
-      propertyId: req?.query?.propertyId,
-      userId: req?.query?.userId,
-      clicks: 1,
-      date: newDate,
-    });
     const result = data.save();
+
     return res.status(200).json({ message: "success", data: result });
   } catch (error) {
-    console.log("from_impressionadd", error);
     return res.status(400).send({ message: "problem here" });
   }
 });
@@ -815,45 +825,45 @@ router.post('/location-suggestions', async (req, res) => {
   // console.log("WOrking");
   const axios = require("axios");
   const apikey = process.env.GOOGLE_API_KEY;
-  
-    const { value } = req.body;
-    let addressList = [];
-    try {
-      const response = await axios.post(
-        `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${value}&location=${LATITUDE},${LONGITUDE}&radius=500&types=establishment&key=${apikey}`
-      );
-      if (response.data) {
-        let Data = response.data["predictions"];
 
-        for (let element of Data) {
-          temp = {
-            address: element["structured_formatting"]["main_text"],
-            fulladdress: element["description"],
-          };
-          addressList.push(temp);
-        }
+  const { value } = req.body;
+  let addressList = [];
+  try {
+    const response = await axios.post(
+      `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${value}&location=${LATITUDE},${LONGITUDE}&radius=500&types=establishment&key=${apikey}`
+    );
+    if (response.data) {
+      let Data = response.data["predictions"];
 
-        addressList.length !== 0
-          ? res.status(200).send(addressList)
-          : res.status(200).send([]);
-          // console.log("Address list", addressList);
-      } else {
+      for (let element of Data) {
+        temp = {
+          address: element["structured_formatting"]["main_text"],
+          fulladdress: element["description"],
+        };
+        addressList.push(temp);
       }
-    } catch (error) {
-      // Handle errors if the request fails
-      res.status(500).send(error);
+
+      addressList.length !== 0
+        ? res.status(200).send(addressList)
+        : res.status(200).send([]);
+      // console.log("Address list", addressList);
+    } else {
     }
+  } catch (error) {
+    // Handle errors if the request fails
+    res.status(500).send(error);
+  }
 })
 
 router.get("/category-counts", async (req, res) => {
   // console.log("length requested before", req.params.category);
   try {
     const catLength = {
-      commercial : (await Property.find({ 'typesAndPurpose.category': 'commercial' })).length,
-      apartment : (await Property.find({ 'typesAndPurpose.subCategory': 'apartment' })).length,
-      villa : (await Property.find({ 'typesAndPurpose.subCategory': 'villa' })).length,
-      residential : (await Property.find({ 'typesAndPurpose.category': 'residential' })).length,
-      townhouse : (await Property.find({ 'typesAndPurpose.subCategory': 'townHouse' })).length,
+      commercial: (await Property.find({ 'typesAndPurpose.category': 'commercial' })).length,
+      apartment: (await Property.find({ 'typesAndPurpose.subCategory': 'apartment' })).length,
+      villa: (await Property.find({ 'typesAndPurpose.subCategory': 'villa' })).length,
+      residential: (await Property.find({ 'typesAndPurpose.category': 'residential' })).length,
+      townhouse: (await Property.find({ 'typesAndPurpose.subCategory': 'townHouse' })).length,
     }
     // const result = await Property.find({ 'typesAndPurpose.category': req.params.category });
     // .skip(0)
