@@ -616,12 +616,22 @@ router.get("/add-clicks-on-click", async (req, res) => {
   try {
     let yourDate = new Date();
     const newDate = yourDate.toISOString().split("T")[0];
-    const data = new Clicks({
-      propertyId: req?.query?.propertyId,
-      userId: req?.query?.userId,
-      clicks: 1,
-      date: newDate,
-    });
+    let data;
+    if (req?.query?.userId == 'undefined') {
+      data = new Clicks({
+        propertyId: req?.query?.propertyId,
+        clicks: 1,
+        date: newDate,
+      });
+    } else {
+      data = new Clicks({
+        propertyId: req?.query?.propertyId,
+        userId: req?.query?.userId,
+        clicks: 1,
+        date: newDate,
+      });
+    }
+
     const result = data.save();
     return res.status(200).json({ message: "success", data: result });
   } catch (error) {
