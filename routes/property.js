@@ -7,6 +7,7 @@ const mongoose = require("mongoose");
 require('dotenv').config();
 const Users = require("../models/Users");
 const Property = require("../models/Property");
+const axios = require('axios');
 // const imageUpload = require("../middlewares/Multer");
 const verifyToken = require("../middlewares/UserVerify");
 const Clicks = require("../models/Clicks");
@@ -129,8 +130,8 @@ router.get("/get-property", async (req, res) => {
       }
       if (req?.query?.area != undefined) {
         let data = {};
-        const minArea = req?.query?.area?.split('|')[0]
-        const maxArea = req?.query?.area?.split('|')[1]
+        const minArea = req?.query?.area?.split('|')[0];
+        const maxArea = req?.query?.area?.split('|')[1];
 
         if (minArea != '' && maxArea != '') {
           data["propertyDetails.areaSquare"] = { $lte: maxArea, $gte: minArea };
@@ -158,8 +159,8 @@ router.get("/get-property", async (req, res) => {
       }
       if (req?.query?.price != undefined) {
         let data = {};
-        const minPrice = req?.query?.price?.split('|')[0]
-        const maxPrice = req?.query?.price?.split('|')[1]
+        const minPrice = req?.query?.price?.split('|')[0];
+        const maxPrice = req?.query?.price?.split('|')[1];
         if (minPrice != '' && maxPrice != '') {
           data["propertyDetails.InclusivePrice"] = { $lte: maxPrice, $gte: minPrice };
         } else if (minPrice != '') {
@@ -184,8 +185,8 @@ router.get("/get-property", async (req, res) => {
         data["amenities"] = {
           $elemMatch: {
             name: "bathRooms",
-            value: req?.query?.bathRooms,
-          },
+            value: req?.query?.bathRooms
+          }
         };
         result.push(data);
       }
@@ -882,6 +883,41 @@ router.get("/category-counts", async (req, res) => {
     return res.status(200).send({ message: "success", data: catLength });
   } catch (error) {
     console.log(error);
+  }
+});
+
+
+const apikey = "AIzaSyDNtTiWsqgeSv0IdENvpBY1d0vhqcl5epM";
+router.post('/search-property-location' ,async (req, res) => {
+  let addressList = [];
+  const { lat, long, value } = req.body;
+  // console.log('leapser', value)
+  try {
+    const response = await axios.post(
+      // `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${value}&location=${25.199514},${55.277397}&radius=5000&types=establishment&key=${apikey}`
+      `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${value}&components=country:ae&radius=5000&types=establishment&key=${apikey}`
+    );
+    // Handle the response here
+    // res.status(200).send(response.data);
+    if (response.data) {
+      let Data = response.data["predictions"];
+
+      for (let element of Data) {
+        temp = {
+          address: element["structured_formatting"]["main_text"],
+          fulladdress: element["description"],
+        };
+        addressList.push(temp);
+      }
+      addressList.length !== 0
+        ? res.status(200).send(addressList)
+        : res.status(200).send([]);
+    } else {
+    }
+  } catch (error) {
+    console.log(error)
+    // Handle errors if the request fails
+    res.status(500).send(error);
   }
 });
 
