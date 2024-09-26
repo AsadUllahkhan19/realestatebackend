@@ -841,7 +841,7 @@ router.post('/location-suggestions', async (req, res) => {
   let addressList = [];
   try {
     const response = await axios.post(
-      `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${value}&location=${LATITUDE},${LONGITUDE}&radius=500&types=establishment&key=${apikey}`
+      `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${value}&location=${LATITUDE},${LONGITUDE}&types=establishment&key=${apikey}`
     );
     if (response.data) {
       let Data = response.data["predictions"];
