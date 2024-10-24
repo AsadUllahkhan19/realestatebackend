@@ -1,37 +1,44 @@
 const nodemailer = require("nodemailer");
+require("dotenv").config();
+
+
 
 const transporter = nodemailer.createTransport({
-    host: "smtp.titan.email",
-    port: 587,
-    auth: {
-      user: "hello@macworldproperties.com",
-      pass: 'tUrbuz-gurwym-pepny3',
-    },
-  });
- const MailGun = async (params) => {
-    console.log(params.email, params.message, params.firstName, params.lastName);
+  host: process.env.Ehost,
+  port: process.env.Eport,
+  auth: {
+    user: "support@macworldproperties.com",
+    pass: process.env.Epassword,
+  },
+});
+
+const MailGun = async (req, res) => {
+  const { firstName, lastName, email, phoneNumber, message } = req.body;
+
   try {
-    await new Promise(async (resolve, reject) => {
-      transporter.sendMail(
-        {
-          from: "hello@macworldproperties.com",
-          to: `khanbahadur55555@gmail.com`,
-          subject: "Macworld Logistics Quote Verification",
-          html: '<h1>asadkhan21687352@gmail.com</h1> <br/> <h1>+971 552239077</h1>',
-          text: "Test Email"
-        },
-        (error, info) => {
-          if (error) {
-            console.log(error);
-            reject(error);
-          } else {
-            resolve(info);
-          }
-        }
-      );
+    await transporter.sendMail({
+      from: "support@macworldproperties.com",
+      to: "hello@macworldproperties.com",
+      subject: "A User Wants To Contact",
+      html: `
+        <div style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px; border-radius: 8px; max-width: 600px; margin: auto; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);">
+          <h2 style="color: #333; text-align: center;">Contact Information</h2>
+          <hr style="border: 1px solid #ccc;">
+          <p style="font-size: 16px; color: #555; margin: 10px 0;"><strong>First Name:</strong> ${firstName}</p>
+          <p style="font-size: 16px; color: #555; margin: 10px 0;"><strong>Last Name:</strong> ${lastName}</p>
+          <p style="font-size: 16px; color: #555; margin: 10px 0;"><strong>Sender Email:</strong> ${email}</p>
+          <p style="font-size: 16px; color: #555; margin: 10px 0;"><strong>Sender Phone Number:</strong> ${phoneNumber}</p>
+          <p style="font-size: 16px; color: #555; margin: 10px 0;"><strong>Message:</strong></p>
+          <p style="line-height: 1.5; color: #555; margin: 10px 0;">${message}</p>
+        </div>
+      `,
+      // text: "Test Email"
     });
+
+    res.status(200).send({message:"User Contact Sent to Admin"});
   } catch (error) {
-    console.error("Error occurred while uploading file:", error);
+    console.error("Error occurred while sending email:", error);
+    res.status(500).send({ error: "Failed to send email. Please try again later." });
   }
 };
 
