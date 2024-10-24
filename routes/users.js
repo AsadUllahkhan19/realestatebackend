@@ -15,6 +15,8 @@ const nodemailer = require("nodemailer");
 const { google } = require("googleapis");
 const { errorMonitor } = require("nodemailer/lib/mailer");
 const MailGun = require('../helpers/ContactUs');
+const Subscribers = require('../models/Subscribers');
+const NewsLetterMail = require('../helpers/NewsLetter')
 const OAuth2 = google.auth.OAuth2;
 
 //create mail transported
@@ -605,6 +607,26 @@ router.post("/social-login", async (req, res) => {
   });
 
 })
+
+router.post('/news-letter-signup', async(req, res) => {
+  try {
+    const { email } = req.body;
+    const checkEmail = await Subscribers.findOne({ email: email });
+
+    if (checkEmail !== null) {
+      return res.status(403).json({ message: "Already subscribed." });
+    }
+    const saveData = new Subscribers({ email: email });
+    const new1 = saveData.save();
+    const new2 = await NewsLetterMail(email);
+    // const result = Promise.all(new1, new2);
+    if(new2){
+      return res.status(400).json({ message: "Successfully Subscribed." });
+    }
+  } catch (error) {
+    return res.status(400).send(error.name);
+  }
+});
 
 // router.post('/', async (req, res) = )
 
