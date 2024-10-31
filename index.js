@@ -44,7 +44,7 @@ const main = require("./config/db");
 // Your Twilio Account SID and Auth Token
 
 app.use(cors('*'));
-app.options('*', cors());
+
 
 
 app.use(bodyParser.json());
@@ -74,7 +74,7 @@ app.use("/", require("./routes/index"));
 
 // Testing API
 
-app.listen(process.env.PORT, () => console.log("Server running 4000"));
+app.listen(process.env.PORT, () => console.log("Server running 8000"));
 
 // jwt.encode(secret, 'asad@gmail.com', function (err, token) {
 //     if (err) {
