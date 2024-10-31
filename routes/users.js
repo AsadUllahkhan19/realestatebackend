@@ -617,16 +617,47 @@ router.post('/news-letter-signup', async(req, res) => {
       return res.status(403).json({ message: "Already subscribed." });
     }
     const saveData = new Subscribers({ email: email });
-    const new1 = saveData.save();
-    const new2 = await NewsLetterMail(email);
+    const {_id} = await saveData.save();
+    console.log("yeha se id ", _id )
+    const new2 = await NewsLetterMail.NewsLetterMail(email ,_id);
     // const result = Promise.all(new1, new2);
     if(new2){
-      return res.status(400).json({ message: "Successfully Subscribed." });
+      return res.status(200).json({ message: "Successfully Subscribed." });
     }
   } catch (error) {
     return res.status(400).send(error.name);
   }
 });
+
+
+router.get('/un-subscribe/:userId', async(req,res)=>{
+  try{
+    const userId = req.params.userId
+
+    const subscriber = await Subscribers.findById(userId); // Find the document first
+
+if (subscriber) {
+    const deletedSubscriber = await Subscribers.deleteOne({ _id: userId }); // Delete the document
+
+    console.log("Deleted Subscriber:", subscriber); // This is the whole deleted object
+
+    const new2 = await NewsLetterMail.UnsubscribeMail(subscriber.email);
+
+    res.status(200).send("You Have Successfully Unsubscribed")
+
+
+} else {
+    console.log("No subscriber found with the provided ID.");
+    res.status(200).send("You are Not Subscriber")
+}
+  
+
+  }
+  catch(error){
+    console.log(error)
+    res.status(500).send({error:error})
+  }
+})
 
 // router.post('/', async (req, res) = )
 
