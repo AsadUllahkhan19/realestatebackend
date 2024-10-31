@@ -73,9 +73,11 @@ const NewsLetterMail = async (email,_id) => {
             color:white
         }
 
-        a {color:#000000; }
 
         @media (max-width: 600px) {
+                .ii a[href] {
+            color:white
+        }
             .container {
                 padding: 10px;
             }
